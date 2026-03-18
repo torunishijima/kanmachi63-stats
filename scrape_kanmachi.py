@@ -559,7 +559,7 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>kanmachi63 出演者統計</title>
+<title>上町63 出演者統計</title>
 <style>
   body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 2em; background: #fafafa; color: #222; }}
   h1 {{ color: #333; border-bottom: 2px solid #c8a84b; padding-bottom: .3em; }}
@@ -576,7 +576,7 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
 </style>
 </head>
 <body>
-<h1>🎵 kanmachi63 出演者統計</h1>
+<h1>🎵 上町63 出演者統計</h1>
 <p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>
 <table>
 <thead>

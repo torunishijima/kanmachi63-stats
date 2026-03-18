@@ -175,7 +175,7 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 50):
 </head>
 <body>
 <a class="back" href="index.html">← トップへ</a>
-<h1>📅 kanmachi63 年別ランキング</h1>
+<h1>📅 上町63 年別ランキング</h1>
 <p class="meta">集計日時: {now} ／ 対象期間: {min(years)}年〜{max(years)}年</p>
 <div class="tabs">{tab_buttons}</div>
 {tab_contents}
@@ -245,7 +245,7 @@ def write_heatmap(by_year: dict[int, dict], path: str):
 </head>
 <body>
 <a class="back" href="index.html">← トップへ</a>
-<h1>🌡️ kanmachi63 出演日数ヒートマップ</h1>
+<h1>🌡️ 上町63 出演日数ヒートマップ</h1>
 <p class="meta">集計日時: {now} ／ 総合TOP30 × 年別出演日数</p>
 <div class="wrap">
 <table>
