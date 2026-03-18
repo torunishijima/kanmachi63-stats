@@ -288,6 +288,7 @@ def normalize_name(name: str) -> str | None:
 
 # スケジュール記事タイトルのパターン
 SCHEDULE_TITLE_RE = re.compile(r'[0-9０-９]+月のスケジュール', re.UNICODE)
+YEAR_MONTH_RE = re.compile(r'(20\d{2})年(\d+)月のスケジュール')
 
 # 出演者パターン: 「楽器コード.名前」（半角化済みテキストに適用）
 PERFORMER_TOKEN_RE = re.compile(
@@ -491,6 +492,23 @@ def aggregate(entries: list[dict]) -> dict:
     return dict(stats)
 
 
+# ─── 期間情報 ─────────────────────────────────────────────────────────────────
+
+def get_period(entries: list[dict]) -> tuple[str, str, int]:
+    """スケジュール記事の期間（開始、終了、件数）を返す"""
+    months = []
+    for entry in entries:
+        m = YEAR_MONTH_RE.search(entry['title'])
+        if m:
+            months.append((int(m.group(1)), int(m.group(2))))
+    if not months:
+        return '不明', '不明', 0
+    months.sort()
+    start = f'{months[0][0]}年{months[0][1]}月'
+    end = f'{months[-1][0]}年{months[-1][1]}月'
+    return start, end, len(months)
+
+
 # ─── 出力 ────────────────────────────────────────────────────────────────────
 
 def write_csv(stats: dict, path: str):
@@ -510,7 +528,7 @@ def write_csv(stats: dict, path: str):
     print(f'CSV 出力: {path}')
 
 
-def write_html(stats: dict, path: str):
+def write_html(stats: dict, path: str, period_start: str = '', period_end: str = '', period_count: int = 0):
     rows = []
     for name, info in stats.items():
         rows.append({
@@ -559,7 +577,7 @@ def write_html(stats: dict, path: str):
 </head>
 <body>
 <h1>🎵 kanmachi63 出演者統計</h1>
-<p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: 2012年8月〜2026年4月</p>
+<p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>
 <table>
 <thead>
 <tr>
@@ -598,6 +616,7 @@ if __name__ == '__main__':
 
     print('\n3. 結果を出力中...')
     write_csv(stats, OUT_CSV)
-    write_html(stats, OUT_HTML)
+    period_start, period_end, period_count = get_period(entries)
+    write_html(stats, OUT_HTML, period_start, period_end, period_count)
 
     print('\n完了！')
