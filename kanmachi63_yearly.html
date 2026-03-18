@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上町63 年別ランキング</title>
+<style>
+
+  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#f5f5f5; color:#222; }
+  h1 { margin:0; padding:.8em 1em .4em; color:#2c3e50; font-size:1.3em; }
+  p.meta { margin:0 1em .8em; color:#888; font-size:.82em; }
+  a.back { display:inline-block; margin:.5em 1em 0; font-size:.85em; color:#2980b9; text-decoration:none; }
+  a.back:hover { text-decoration:underline; }
+
+  .tabs { padding:.5em 1em 0; border-bottom:2px solid #c8a84b; overflow-x:auto; white-space:nowrap; }
+  .tab-btn {
+    border:none; background:#ddd; padding:.4em .7em; margin-right:3px;
+    border-radius:4px 4px 0 0; cursor:pointer; font-size:.85em; color:#555;
+  }
+  .tab-btn.active { background:#c8a84b; color:#fff; font-weight:bold; }
+  .tab-pane { display:none; padding:.8em 1em; overflow-x:auto; }
+  .tab-pane.active { display:block; }
+  .year-summary { margin-bottom:.8em; font-size:.88em; color:#555; }
+  .year-summary span { margin-right:1.5em; }
+  table { border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.1); width:100%; max-width:680px; }
+  th { background:#2c3e50; color:#fff; padding:7px 10px; text-align:left; font-size:.82em; }
+  td { padding:6px 10px; border-bottom:1px solid #eee; font-size:.85em; }
+  .rank { width:2.5em; text-align:center; font-weight:bold; color:#555; border-radius:3px; }
+  .count { text-align:center; font-weight:bold; color:#c0392b; width:4.5em; }
+  .inst { color:#2980b9; font-size:.8em; }
+  @media (max-width:480px) {
+    .inst { display:none; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="index.html">← トップへ</a>
+<h1>📅 kanmachi63 年別ランキング</h1>
+<p class="meta">集計日時: 2026-03-17 02:07 ／ 対象期間: 2012年〜2026年</p>
+<div class="tabs"><button class="tab-btn" onclick="showTab(2012)" id="btn-2012">2012</button><button class="tab-btn" onclick="showTab(2013)" id="btn-2013">2013</button><button class="tab-btn" onclick="showTab(2014)" id="btn-2014">2014</button><button class="tab-btn" onclick="showTab(2015)" id="btn-2015">2015</button><button class="tab-btn" onclick="showTab(2016)" id="btn-2016">2016</button><button class="tab-btn" onclick="showTab(2017)" id="btn-2017">2017</button><button class="tab-btn" onclick="showTab(2018)" id="btn-2018">2018</button><button class="tab-btn" onclick="showTab(2019)" id="btn-2019">2019</button><button class="tab-btn" onclick="showTab(2020)" id="btn-2020">2020</button><button class="tab-btn" onclick="showTab(2021)" id="btn-2021">2021</button><button class="tab-btn" onclick="showTab(2022)" id="btn-2022">2022</button><button class="tab-btn" onclick="showTab(2023)" id="btn-2023">2023</button><button class="tab-btn" onclick="showTab(2024)" id="btn-2024">2024</button><button class="tab-btn" onclick="showTab(2025)" id="btn-2025">2025</button><button class="tab-btn active" onclick="showTab(2026)" id="btn-2026">2026</button></div>
+
+<div class="tab-pane" id="tab-2012">
+  <div class="year-summary">
+    <span>出演者数: <strong>84</strong> 名</span>
+    <span>延べ出演日数: <strong>298</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">10</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">9</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">竹内直</td><td class="inst">pf / ts</td><td class="count">9</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">須川崇志</td><td class="inst">b</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">山本昌広</td><td class="inst">as</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">7</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">市野元彦</td><td class="inst">gt</td><td class="count">6</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">清野拓巳</td><td class="inst">gt</td><td class="count">6</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">塩谷博之</td><td class="inst">ss</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">吉野弘志</td><td class="inst">b</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">西村和彦</td><td class="inst">pf</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">カイドーユタカ</td><td class="inst">b</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">清水勇博</td><td class="inst">ds</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">萬恭隆</td><td class="inst">b</td><td class="count">5</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2013">
+  <div class="year-summary">
+    <span>出演者数: <strong>113</strong> 名</span>
+    <span>延べ出演日数: <strong>793</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">40</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">清水勇博</td><td class="inst">ds</td><td class="count">27</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">市野元彦</td><td class="inst">gt</td><td class="count">23</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">馬場孝喜</td><td class="inst">ag / gt</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">須川崇志</td><td class="inst">b</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">清野拓巳</td><td class="inst">gt</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">山本昌広</td><td class="inst">as</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">カイドーユタカ</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">千葉広樹</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">吉野弘志</td><td class="inst">b</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">佐藤浩一</td><td class="inst">pf</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">塩谷博之</td><td class="inst">as / pf / ss</td><td class="count">13</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2014">
+  <div class="year-summary">
+    <span>出演者数: <strong>108</strong> 名</span>
+    <span>延べ出演日数: <strong>756</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">市野元彦</td><td class="inst">gt</td><td class="count">25</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">24</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">山本昌広</td><td class="inst">as</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">落合康介</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">須川崇志</td><td class="inst">b</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">吉野弘志</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">江藤良人</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">清水勇博</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">安東昇</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">清野拓巳</td><td class="inst">gt</td><td class="count">14</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2015">
+  <div class="year-summary">
+    <span>出演者数: <strong>98</strong> 名</span>
+    <span>延べ出演日数: <strong>717</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">かみむら泰一</td><td class="inst">ss.ts / ts / ts.ss</td><td class="count">31</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">25</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">23</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">竹内直</td><td class="inst">ts / ts.fl / ts.fl.bcl</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">岡田ケイタ</td><td class="inst">ds</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">佐藤浩一</td><td class="inst">pf</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">リン・ヘイテツ</td><td class="inst">pf</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">市野元彦</td><td class="inst">gt</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">服部正嗣</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">中牟礼貞則</td><td class="inst">gt</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">俵山昌之</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">古木佳祐</td><td class="inst">b</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">安東昇</td><td class="inst">b</td><td class="count">13</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2016">
+  <div class="year-summary">
+    <span>出演者数: <strong>90</strong> 名</span>
+    <span>延べ出演日数: <strong>688</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">かみむら泰一</td><td class="inst">as / ss.ts / ts / ts.ss</td><td class="count">28</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">27</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">26</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">江藤良人</td><td class="inst">ds</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">岡田ケイタ</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">俵山昌之</td><td class="inst">b</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">吉野弘志</td><td class="inst">b</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">市野元彦</td><td class="inst">gt</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">リン・ヘイテツ</td><td class="inst">pf</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">古木佳祐</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">佐藤浩一</td><td class="inst">pf</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">13</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2017">
+  <div class="year-summary">
+    <span>出演者数: <strong>89</strong> 名</span>
+    <span>延べ出演日数: <strong>666</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">30</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">かみむら泰一</td><td class="inst">ss.ts / ts / ts.ss</td><td class="count">29</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">小太刀のばら</td><td class="inst">pf</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">江藤良人</td><td class="inst">ds</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">リン・ヘイテツ</td><td class="inst">pf</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">古木佳祐</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">吉野弘志</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">俵山昌之</td><td class="inst">b</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">カイドーユタカ</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">中牟礼貞則</td><td class="inst">gt</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">山口真文</td><td class="inst">ts / ts.ss</td><td class="count">13</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2018">
+  <div class="year-summary">
+    <span>出演者数: <strong>89</strong> 名</span>
+    <span>延べ出演日数: <strong>664</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">31</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">かみむら泰一</td><td class="inst">pf / ts</td><td class="count">29</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">26</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">25</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">竹内直</td><td class="inst">ts / ts.ts</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">米田正義</td><td class="inst">pf</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">小太刀のばら</td><td class="inst">pf</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">カイドーユタカ</td><td class="inst">b</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">江藤良人</td><td class="inst">ds</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">安東昇</td><td class="inst">b</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">岡田ケイタ</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">12</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2019">
+  <div class="year-summary">
+    <span>出演者数: <strong>87</strong> 名</span>
+    <span>延べ出演日数: <strong>621</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">34</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">34</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">かみむら泰一</td><td class="inst">ts / ts.ss</td><td class="count">27</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">23</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">大村亘</td><td class="inst">ds / tabla.ds</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">岡田ヨシヒロ</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">小太刀のばら</td><td class="inst">pf</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">青木タイセイ</td><td class="inst">tb</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">リン・ヘイテツ</td><td class="inst">pf</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">安東昇</td><td class="inst">b</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">カイドーユタカ</td><td class="inst">b</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">露木達也</td><td class="inst">gt</td><td class="count">12</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2020">
+  <div class="year-summary">
+    <span>出演者数: <strong>68</strong> 名</span>
+    <span>延べ出演日数: <strong>461</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">26</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">24</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">青木タイセイ</td><td class="inst">etc / tb / tb.etc</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">かみむら泰一</td><td class="inst">ts / ts.ss</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">岡田ヨシヒロ</td><td class="inst">ds</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">古木佳祐</td><td class="inst">b</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">蜂谷真紀</td><td class="inst">vo.pf</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">渋谷毅</td><td class="inst">pf</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">則武諒</td><td class="inst">ds</td><td class="count">9</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">今泉総之輔</td><td class="inst">ds</td><td class="count">9</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2021">
+  <div class="year-summary">
+    <span>出演者数: <strong>74</strong> 名</span>
+    <span>延べ出演日数: <strong>444</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">23</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">22</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">青木タイセイ</td><td class="inst">tb / tb.etc</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">則武諒</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">原大力</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">池戸祐太</td><td class="inst">gt</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">かみむら泰一</td><td class="inst">ts / ts.ss</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">岡田佳太</td><td class="inst">ds</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">山口真文</td><td class="inst">ts.ss</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">10</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">渋谷毅</td><td class="inst">pf</td><td class="count">10</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2022">
+  <div class="year-summary">
+    <span>出演者数: <strong>66</strong> 名</span>
+    <span>延べ出演日数: <strong>495</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt / pf</td><td class="count">27</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">西嶋徹</td><td class="inst">b / vln / wb.vln</td><td class="count">27</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">青木タイセイ</td><td class="inst">etc / tb / tb.eb / tb.etc</td><td class="count">24</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">座小田諒一</td><td class="inst">b</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">竹内直</td><td class="inst">as.ts / ts</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">原大力</td><td class="inst">ds</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">吉岡大輔</td><td class="inst">ds</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">岡田佳太</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">橋爪亮督</td><td class="inst">ctrinics.ts / ts</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">山口真文</td><td class="inst">ts / ts.ss</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">中牟礼貞則</td><td class="inst">gt</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">蜂谷真紀</td><td class="inst">vo / vo.pf</td><td class="count">11</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2023">
+  <div class="year-summary">
+    <span>出演者数: <strong>65</strong> 名</span>
+    <span>延べ出演日数: <strong>453</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">25</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">西嶋徹</td><td class="inst">b</td><td class="count">21</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">竹内直</td><td class="inst">ts</td><td class="count">20</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">青木タイセイ</td><td class="inst">eb / tb / tb.etc</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">座小田諒一</td><td class="inst">b / wb</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">原大力</td><td class="inst">ds</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">山口真文</td><td class="inst">ts.ss</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">渋谷毅</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">鈴木央紹</td><td class="inst">ts</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">佐藤“ハチ”恭彦</td><td class="inst">b</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">中牟礼貞則</td><td class="inst">gt</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">11</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">清水麻八子</td><td class="inst">vo</td><td class="count">10</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2024">
+  <div class="year-summary">
+    <span>出演者数: <strong>69</strong> 名</span>
+    <span>延べ出演日数: <strong>538</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">青木タイセイ</td><td class="inst">tb / tb.eb / tb.etc</td><td class="count">28</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">座小田諒一</td><td class="inst">b / wb</td><td class="count">27</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">25</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">竹内直</td><td class="inst">ts / ts.as / ts.etc</td><td class="count">23</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">橋爪亮督</td><td class="inst">ts / ts.ryricon</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">小牧良平</td><td class="inst">b / wb</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">布施音人</td><td class="inst">pf</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">西嶋徹</td><td class="inst">b / vln</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">原大力</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">池長一美</td><td class="inst">ds</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">甲斐正樹</td><td class="inst">b / wb</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">小太刀のばら</td><td class="inst">pf</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">山口真文</td><td class="inst">ts.ss</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">東海林由孝</td><td class="inst">gt</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">則武諒</td><td class="inst">ds</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">12</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">西山瞳</td><td class="inst">pf</td><td class="count">12</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2025">
+  <div class="year-summary">
+    <span>出演者数: <strong>81</strong> 名</span>
+    <span>延べ出演日数: <strong>643</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">33</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">座小田諒一</td><td class="inst">b / wb</td><td class="count">24</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">西嶋徹</td><td class="inst">b / wb</td><td class="count">23</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">竹内直</td><td class="inst">ts / ts.etc / ts.ss</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">青木タイセイ</td><td class="inst">tb / tb.etc</td><td class="count">22</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">21</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">リン・ヘイテツ</td><td class="inst">pf</td><td class="count">19</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">布施音人</td><td class="inst">pf</td><td class="count">18</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">閑喜弦介</td><td class="inst">gt</td><td class="count">17</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">かみむら泰一</td><td class="inst">ts / ts.ss</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">16</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">甲斐正樹</td><td class="inst">b / wb</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">落合康介</td><td class="inst">b / wb</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">栗田妙子</td><td class="inst">pf / pf.pianica</td><td class="count">15</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">山崎隼</td><td class="inst">ds</td><td class="count">14</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">安東昇</td><td class="inst">b / wb</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">塙正貴</td><td class="inst">as / ss</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">露木達也</td><td class="inst">ag / gt</td><td class="count">13</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">小太刀のばら</td><td class="inst">pf / ts</td><td class="count">12</td></tr>
+</tbody>
+  </table>
+</div>
+
+<div class="tab-pane" id="tab-2026">
+  <div class="year-summary">
+    <span>出演者数: <strong>57</strong> 名</span>
+    <span>延べ出演日数: <strong>221</strong></span>
+  </div>
+  <table>
+    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <tbody><tr><td class="rank" style="background:#f0c040">1</td><td class="name">馬場孝喜</td><td class="inst">gt</td><td class="count">13</td></tr>
+<tr><td class="rank" style="background:#c0c0c0">2</td><td class="name">座小田諒一</td><td class="inst">b</td><td class="count">10</td></tr>
+<tr><td class="rank" style="background:#cd8f5a">3</td><td class="name">閑喜弦介</td><td class="inst">ag / eg / gt</td><td class="count">9</td></tr>
+<tr><td class="rank" style="">4</td><td class="name">青木タイセイ</td><td class="inst">tb</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">5</td><td class="name">西嶋徹</td><td class="inst">b / vln</td><td class="count">8</td></tr>
+<tr><td class="rank" style="">6</td><td class="name">小牧良平</td><td class="inst">b</td><td class="count">7</td></tr>
+<tr><td class="rank" style="">7</td><td class="name">竹内直</td><td class="inst">as / ts / ts.bcl</td><td class="count">7</td></tr>
+<tr><td class="rank" style="">8</td><td class="name">布施音人</td><td class="inst">pf</td><td class="count">7</td></tr>
+<tr><td class="rank" style="">9</td><td class="name">栗田妙子</td><td class="inst">pf</td><td class="count">6</td></tr>
+<tr><td class="rank" style="">10</td><td class="name">橋爪亮督</td><td class="inst">ts</td><td class="count">6</td></tr>
+<tr><td class="rank" style="">11</td><td class="name">山崎隼</td><td class="inst">ds</td><td class="count">6</td></tr>
+<tr><td class="rank" style="">12</td><td class="name">甲斐正樹</td><td class="inst">b</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">13</td><td class="name">大村亘</td><td class="inst">ds</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">14</td><td class="name">かみむら泰一</td><td class="inst">ts / ts.ss</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">15</td><td class="name">露木達也</td><td class="inst">ag / gt</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">16</td><td class="name">落合康介</td><td class="inst">b / ds</td><td class="count">5</td></tr>
+<tr><td class="rank" style="">17</td><td class="name">福冨博</td><td class="inst">gt</td><td class="count">4</td></tr>
+<tr><td class="rank" style="">18</td><td class="name">清水翠</td><td class="inst">vo</td><td class="count">4</td></tr>
+<tr><td class="rank" style="">19</td><td class="name">田中信正</td><td class="inst">pf</td><td class="count">4</td></tr>
+<tr><td class="rank" style="">20</td><td class="name">安東昇</td><td class="inst">b</td><td class="count">4</td></tr>
+</tbody>
+  </table>
+</div>
+
+<script>
+function showTab(year) {
+  document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + year).classList.add('active');
+  document.getElementById('btn-' + year).classList.add('active');
+}
+showTab(2026);
+</script>
+</body>
+</html>

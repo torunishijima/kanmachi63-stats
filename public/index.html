@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上町63 出演者統計</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Hiragino Sans", "Meiryo", sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2em 1em;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 3em;
+  }
+  .hero h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #c8a84b;
+    letter-spacing: .05em;
+    margin-bottom: .4em;
+  }
+  .hero p {
+    color: #aaa;
+    font-size: .95em;
+    line-height: 1.7;
+  }
+  .hero .period {
+    display: inline-block;
+    margin-top: .6em;
+    background: #2c3e50;
+    border-radius: 20px;
+    padding: .3em 1.2em;
+    font-size: .85em;
+    color: #c8a84b;
+  }
+
+  .cards {
+    display: flex;
+    gap: 1.5em;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .card {
+    background: #16213e;
+    border: 1px solid #2c3e50;
+    border-radius: 12px;
+    padding: 1.8em 2em;
+    width: 260px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+    display: flex;
+    flex-direction: column;
+    gap: .7em;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #c8a84b;
+    box-shadow: 0 8px 24px rgba(200,168,75,.15);
+  }
+  .card .icon { font-size: 2.2em; }
+  .card .title { font-size: 1.1em; font-weight: bold; color: #eee; }
+  .card .desc { font-size: .85em; color: #888; line-height: 1.6; }
+
+  .about {
+    max-width: 640px;
+    width: 100%;
+    margin-bottom: 2.5em;
+    color: #999;
+    font-size: .88em;
+    line-height: 1.8;
+    text-align: center;
+  }
+  .note {
+    max-width: 640px;
+    width: 100%;
+    margin-top: 2.5em;
+    padding: .9em 1.2em;
+    background: #16213e;
+    border: 1px solid #2c3e50;
+    border-left: 3px solid #c8a84b;
+    border-radius: 6px;
+    color: #777;
+    font-size: .8em;
+    line-height: 1.8;
+  }
+  .note strong { color: #999; }
+  .footer {
+    margin-top: 2em;
+    color: #555;
+    font-size: .8em;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🎵 上町63 出演者統計</h1>
+  <p>横浜・関内のジャズバー <a href="http://kanmachi63.blog.fc2.com/" style="color:#c8a84b;text-decoration:none;">上町63</a> の出演者データを集計した非公式サイトです。</p>
+  <span class="period">📅 2012年8月 〜 2026年4月 ／ 163ヶ月 ／ 343名</span>
+</div>
+
+<div class="about">
+  上町63 は横浜・関内にある老舗のジャズバーです。<br>
+  このサイトは、店のブログに掲載された月次スケジュール記事をもとに、<br>
+  出演者の名前・楽器・出演日をプログラムで自動集計したものです。
+</div>
+
+<div class="cards">
+  <a class="card" href="kanmachi63_yearly.html">
+    <div class="icon">📊</div>
+    <div class="title">年別トレンド</div>
+    <div class="desc">年ごとの出演者ランキング。コロナ禍前後など年単位での変化がわかる。</div>
+  </a>
+
+  <a class="card" href="kanmachi63_heatmap.html">
+    <div class="icon">🌡️</div>
+    <div class="title">出演ヒートマップ</div>
+    <div class="desc">総合TOP30の出演者が年ごとにどれだけ出演したかを一覧で比較できる。</div>
+  </a>
+
+  <a class="card" href="kanmachi63_coplayers.html">
+    <div class="icon">👥</div>
+    <div class="title">共演者ランキング</div>
+    <div class="desc">出演者を選ぶと共演者ランキングを表示。名前をたどって関係を探索できる。</div>
+  </a>
+</div>
+
+<div class="note">
+  <strong>【データについて】</strong><br>
+  集計はブログ記事のテキストをプログラムで解析したものです。ブログ上の表記ゆれ・誤字・フォーマットの揺れにより、名前の表記が正確でない場合や、同一人物が別名で重複して集計されている場合があります。また、中止・変更になった公演が一部含まれている可能性があります。あくまで非公式の個人集計であり、内容の正確性は保証しません。
+</div>
+
+<div class="footer">
+  データ出典: <a href="http://kanmachi63.blog.fc2.com/" style="color:#555">上町63 ブログ</a>
+</div>
+
+</body>
+</html>

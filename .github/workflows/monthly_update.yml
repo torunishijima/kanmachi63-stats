@@ -1,0 +1,47 @@
+name: Monthly Stats Update
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'  # 毎月1日 午前3時（UTC）= 日本時間 正午
+  workflow_dispatch:       # 手動実行も可能
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Restore page cache
+        uses: actions/cache@v4
+        with:
+          path: .page_cache
+          key: page-cache-${{ github.run_id }}
+          restore-keys: |
+            page-cache-
+
+      - name: Run scraper
+        run: python scrape_kanmachi.py
+
+      - name: Run yearly trend
+        run: python yearly_trend.py
+
+      - name: Run coplayer report
+        run: python coplayer_report.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kanmachi63_stats.csv kanmachi63_stats.html \
+                  kanmachi63_yearly.csv kanmachi63_yearly.html \
+                  kanmachi63_coplayers.html nishijima_coplayers.csv \
+                  public/
+          git diff --cached --quiet || git commit -m "chore: monthly stats update $(date +'%Y-%m')"
+          git push
