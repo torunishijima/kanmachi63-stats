@@ -103,7 +103,7 @@ _COMMON_CSS = """
   a.back:hover { text-decoration:underline; }
 """
 
-def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 30):
+def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 50):
     years = sorted(by_year.keys())
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
     latest_year = max(years)
