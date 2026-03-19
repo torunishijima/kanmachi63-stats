@@ -511,13 +511,18 @@ def aggregate(entries: list[dict]) -> dict:
 
 # ─── 期間情報 ─────────────────────────────────────────────────────────────────
 
+_TITLE_YEAR_RE  = re.compile(r'(20\d{2})')
+_TITLE_MONTH_RE = re.compile(r'(\d+)月のスケジュール')
+
 def get_period(entries: list[dict]) -> tuple[str, str, int]:
     """スケジュール記事の期間（開始、終了、件数）を返す"""
     months = []
     for entry in entries:
-        m = YEAR_MONTH_RE.search(entry['title'])
-        if m:
-            months.append((int(m.group(1)), int(m.group(2))))
+        title = entry['title']
+        ym = _TITLE_YEAR_RE.search(title)
+        mm = _TITLE_MONTH_RE.search(title)
+        if ym and mm:
+            months.append((int(ym.group(1)), int(mm.group(1))))
     if not months:
         return '不明', '不明', 0
     months.sort()
@@ -634,6 +639,20 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
     print(f'HTML 出力: {path}')
 
 
+# ─── index.html 更新 ─────────────────────────────────────────────────────────
+
+def update_index_html(stats: dict, period_start: str, period_end: str, period_count: int, path: str = 'index.html'):
+    """index.html の出演者数・期間・ヶ月数を書き換える"""
+    import re as _re
+    with open(path, encoding='utf-8') as f:
+        content = f.read()
+    new_span = f'<span class="period">📅 {period_start} 〜 {period_end} ／ {period_count}ヶ月 ／ {len(stats)}名</span>'
+    content = _re.sub(r'<span class="period">.*?</span>', new_span, content)
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f'index.html 更新: {period_start}〜{period_end} {period_count}ヶ月 {len(stats)}名')
+
+
 # ─── エントリポイント ──────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
@@ -652,5 +671,6 @@ if __name__ == '__main__':
     write_csv(stats, OUT_CSV)
     period_start, period_end, period_count = get_period(entries)
     write_html(stats, OUT_HTML, period_start, period_end, period_count)
+    update_index_html(stats, period_start, period_end, period_count)
 
     print('\n完了！')
