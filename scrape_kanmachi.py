@@ -9,6 +9,7 @@ import csv
 import time
 import html
 import urllib.request
+import urllib.parse
 from pathlib import Path
 from collections import defaultdict
 from html.parser import HTMLParser
@@ -113,8 +114,8 @@ def to_halfwidth(text: str) -> str:
 _KNOWN_INSTRUMENTS = {
     'pf', 'gt', 'ag', 'eg', 'b', 'eb', 'ds', 'vo', 'fl', 'cl', 'tp', 'tb',
     'ts', 'as', 'bs', 'ss', 'vc', 'vn', 'vln', 'va', 'org', 'syn', 'key',
-    'perc', 'harp', 'oud', 'sax', 'harm', 'har', 'acc', 'mand', 'vib', 'mar',
-    'etc', 'mc', 'dj', 'rap', 'cho', 'wb',
+    'perc', 'harp', 'oud', 'sax', 'harm', 'har', 'harmo', 'hamo', 'acc', 'mand', 'vib', 'mar',
+    'etc', 'mc', 'dj', 'rap', 'cho', 'wb', 'reed',
 }
 
 _NON_INSTRUMENTS = {
@@ -142,7 +143,7 @@ _NAME_TAIL_PATTERNS = [
     r'【[^】]*】',                           # 【SOLDOUT】など
     r'（[^）]*）$',                          # （補足）
     r'[￥¥][\d,，\s]*$',                    # ¥3,300 などの価格
-    r'(?<=[^\s])[a-zA-Z]{2,4}$',           # 末尾に楽器コードが残ったもの (pf, ds, etc.)
+    r'(?<=[\u3040-\u30ff\u4e00-\u9fff])[a-zA-Z]{2,4}$',  # CJK文字の後に残った楽器コード (pf, ds, etc.)
     r'[\.．。、,，\s]+$',                    # 末尾の記号
 ]
 _NAME_TAIL_RE = [re.compile(p, re.UNICODE) for p in _NAME_TAIL_PATTERNS]
@@ -251,6 +252,8 @@ _NAME_ALIASES: dict[str, str | None] = {
     '￥3':             None,
     '￥３':            None,
     '.electronics':    None,
+    'electronics':     None,
+    'Satsuki Cd':      'Satsuki',
     '渋谷毅SOLO':      '渋谷毅',
     '西山瞳ＳＯＬＯ': '西山瞳',
     '田中菜緒子【SOLDOUT】': '田中菜緒子',
@@ -292,10 +295,12 @@ YEAR_MONTH_RE = re.compile(r'(20\d{2})年(\d+)月のスケジュール')
 
 # 出演者パターン: 「楽器コード.名前」（半角化済みテキストに適用）
 PERFORMER_TOKEN_RE = re.compile(
-    r'((?:[a-zA-Z]{1,8}\.)+)'                      # 楽器部分
+    r'((?:[a-zA-Z]{1,8}\.)+)[ \t]?'               # 楽器部分（直後の半角スペース1つを許容）
     r'((?:(?![a-z]{1,8}\.)[^\s、。,，\n<「」\[\]（）()@￥¥])+)',  # 名前部分
     re.UNICODE
 )
+# 西洋人名の姓部分: 大文字始まりでドットが直後に来ない単語
+_SURNAME_RE = re.compile(r'[ \t]+([A-Z][a-zA-Z]+)(?!\.)')
 
 # 日付行検出パターン（例: 4月1日、10月15日（祝））
 DATE_LINE_RE = re.compile(r'\d+月\d+日')
@@ -326,8 +331,20 @@ def _parse_performers(text: str) -> list[tuple[str, str]]:
             continue
         if len(name) < 2:
             continue
-        if not re.search(r'[\u3000-\u9fff\uff00-\uffef\u3040-\u30ff]', name) and re.match(r'^[a-zA-Z]+$', name):
+        # 日本語を含まないASCII名: 小文字始まりはJSコード等のノイズとして除外
+        if not re.search(r'[\u3000-\u9fff\uff00-\uffef\u3040-\u30ff]', name) and re.match(r'^[a-z]', name):
             continue
+        # 全大文字のASCII名（CHAKA, JOSENなど）はタイトルケースに正規化
+        if re.match(r'^[A-Z]{2,}$', name):
+            name = name.title()
+        # 大文字始まりASCII名（Todd, Rosarioなど）の後に姓が続く場合は連結
+        if re.match(r'^[A-Z][a-zA-Z]+$', name):
+            sm = _SURNAME_RE.match(text[m.end():])
+            if sm:
+                surname = sm.group(1)
+                if re.match(r'^[A-Z]{2,}$', surname):
+                    surname = surname.title()
+                name = name + ' ' + surname
         results.append((instrument_raw, name))
     return results
 
@@ -548,7 +565,7 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
         table_rows += (
             f'<tr>'
             f'<td class="rank">{i}</td>'
-            f'<td class="name">{html.escape(r["name"])}</td>'
+            f'<td class="name"><a href="kanmachi63_coplayers.html#{urllib.parse.quote(r["name"])}">{html.escape(r["name"])}</a></td>'
             f'<td class="inst">{html.escape(r["instruments"])}</td>'
             f'<td class="count">{r["count"]}</td>'
             f'<td class="articles">{articles_html}</td>'
@@ -561,9 +578,10 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
 <meta charset="UTF-8">
 <title>上町63 出演者統計</title>
 <style>
-  body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 2em; background: #fafafa; color: #222; }}
-  h1 {{ color: #333; border-bottom: 2px solid #c8a84b; padding-bottom: .3em; }}
-  p.meta {{ color: #888; font-size: .85em; }}
+  body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 0; background: #fafafa; color: #222; }}
+  .page-content {{ padding: 2em; }}
+  h1 {{ color: #333; border-bottom: 2px solid #c8a84b; padding-bottom: .3em; margin-bottom: .5em; }}
+  p.meta {{ color: #888; font-size: .85em; margin: 0 0 1em; }}
   table {{ border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1); }}
   th {{ background: #2c3e50; color: #fff; padding: 10px 14px; text-align: left; }}
   td {{ padding: 8px 14px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }}
@@ -573,9 +591,24 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
   .inst {{ color: #2980b9; font-size: .85em; }}
   .articles {{ font-size: .78em; color: #555; max-width: 300px; }}
   .article {{ display: inline-block; background: #eef2f7; border-radius: 3px; padding: 1px 5px; margin: 1px; }}
+  .name a {{ color: #2c3e50; text-decoration: none; }}
+  .name a:hover {{ color: #1abc9c; text-decoration: underline; }}
+  .sitenav {{ display:flex; align-items:center; background:#2c3e50; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }}
+  .sitenav a {{ color:#bdc3c7; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }}
+  .sitenav a:hover {{ background:#34495e; color:#ecf0f1; }}
+  .sitenav a.nav-active {{ background:#1abc9c; color:#fff; font-weight:bold; }}
+  .snav-home {{ color:#c8a84b !important; border-right:1px solid #3d5166; }}
 </style>
 </head>
 <body>
+<nav class="sitenav">
+  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
+  <a href="kanmachi63_history.html">📅 履歴</a>
+  <a href="kanmachi63_coplayers.html">👥 共演者</a>
+  <a href="kanmachi63_yearly.html">📊 年別</a>
+  <a href="kanmachi63_heatmap.html">🌡️ ヒートマップ</a>
+</nav>
+<div class="page-content">
 <h1>🎵 上町63 出演者統計</h1>
 <p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>
 <table>
@@ -592,6 +625,7 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
 {table_rows}
 </tbody>
 </table>
+</div>
 </body>
 </html>
 """

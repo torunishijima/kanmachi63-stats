@@ -10,6 +10,7 @@ import csv
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
 
 from scrape_kanmachi import (
     BlogParser, NextPageParser, SCHEDULE_TITLE_RE,
@@ -99,11 +100,24 @@ _COMMON_CSS = """
   body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#f5f5f5; color:#222; }
   h1 { margin:0; padding:.8em 1em .4em; color:#2c3e50; font-size:1.3em; }
   p.meta { margin:0 1em .8em; color:#888; font-size:.82em; }
-  a.back { display:inline-block; margin:.5em 1em 0; font-size:.85em; color:#2980b9; text-decoration:none; }
-  a.back:hover { text-decoration:underline; }
+  .name a, .hname a { color: inherit; text-decoration: none; }
+  .name a:hover, .hname a:hover { color: #1abc9c; text-decoration: underline; }
+  /* ナビゲーションバー */
+  .sitenav {
+    display:flex; align-items:center; background:#2c3e50; height:40px;
+    overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch;
+  }
+  .sitenav a {
+    color:#bdc3c7; text-decoration:none;
+    padding:0 .9em; height:40px; line-height:40px;
+    font-size:.82em; white-space:nowrap; display:inline-block;
+  }
+  .sitenav a:hover { background:#34495e; color:#ecf0f1; }
+  .sitenav a.nav-active { background:#1abc9c; color:#fff; font-weight:bold; }
+  .snav-home { color:#c8a84b !important; border-right:1px solid #3d5166; }
 """
 
-def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 50):
+def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
     years = sorted(by_year.keys())
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
     latest_year = max(years)
@@ -115,13 +129,13 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 50):
         total_performers = len(yd)
         total_appearances = sum(v['count'] for v in yd.values())
         rows_html = ''
-        for rank, (name, info) in enumerate(ranked[:top_n], 1):
+        for rank, (name, info) in enumerate(ranked if not top_n else ranked[:top_n], 1):
             color = rank_color(rank)
             bg = f'background:{color}' if color else ''
             rows_html += (
                 f'<tr>'
                 f'<td class="rank" style="{bg}">{rank}</td>'
-                f'<td class="name">{html.escape(name)}</td>'
+                f'<td class="name"><a href="kanmachi63_coplayers.html#{quote(name)}">{html.escape(name)}</a></td>'
                 f'<td class="inst">{html.escape(" / ".join(sorted(info["instruments"])))}</td>'
                 f'<td class="count">{info["count"]}</td>'
                 f'</tr>\n'
@@ -174,7 +188,13 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 50):
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← トップへ</a>
+<nav class="sitenav">
+  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
+  <a href="kanmachi63_history.html">📅 履歴</a>
+  <a href="kanmachi63_coplayers.html">👥 共演者</a>
+  <a href="kanmachi63_yearly.html" class="nav-active">📊 年別</a>
+  <a href="kanmachi63_heatmap.html">🌡️ ヒートマップ</a>
+</nav>
 <h1>📅 上町63 年別ランキング</h1>
 <p class="meta">集計日時: {now} ／ 対象期間: {min(years)}年〜{max(years)}年</p>
 <div class="tabs">{tab_buttons}</div>
@@ -204,7 +224,7 @@ def write_heatmap(by_year: dict[int, dict], path: str):
     for yd in by_year.values():
         for name, info in yd.items():
             total_counts[name] += info['count']
-    top_names = [n for n, _ in sorted(total_counts.items(), key=lambda x: -x[1])[:30]]
+    top_names = [n for n, _ in sorted(total_counts.items(), key=lambda x: -x[1])]
 
     heat_header = ''.join(f'<th>{y}</th>' for y in years) + '<th class="total-col">合計</th>'
     heat_rows = ''
@@ -216,9 +236,10 @@ def write_heatmap(by_year: dict[int, dict], path: str):
                 cells += '<td class="heat-0">—</td>'
             else:
                 intensity = min(int(cnt / 30 * 100), 100)
-                cells += f'<td class="heat-n" style="--pct:{intensity}%">{cnt}</td>'
+                url = f'kanmachi63_history.html#{quote(name)}/{year}'
+                cells += f'<td class="heat-n" style="--pct:{intensity}%"><a href="{url}" class="heat-link">{cnt}</a></td>'
         cells += f'<td class="total-cell">{total_counts[name]}</td>'
-        heat_rows += f'<tr><td class="hname">{html.escape(name)}</td>{cells}</tr>\n'
+        heat_rows += f'<tr><td class="hname"><a href="kanmachi63_coplayers.html#{quote(name)}">{html.escape(name)}</a></td>{cells}</tr>\n'
 
     content = f"""<!DOCTYPE html>
 <html lang="ja">
@@ -239,12 +260,20 @@ def write_heatmap(by_year: dict[int, dict], path: str):
     background: color-mix(in srgb, #e74c3c var(--pct), #fff);
     color: #333; font-weight:bold;
   }}
+  .heat-link {{ color:inherit; text-decoration:none; display:block; }}
+  .heat-link:hover {{ text-decoration:underline; }}
   .total-col {{ background:#1a252f !important; }}
   .total-cell {{ font-weight:bold; color:#c0392b; background:#f9f0f0; border-left:2px solid #c8a84b; }}
 </style>
 </head>
 <body>
-<a class="back" href="index.html">← トップへ</a>
+<nav class="sitenav">
+  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
+  <a href="kanmachi63_history.html">📅 履歴</a>
+  <a href="kanmachi63_coplayers.html">👥 共演者</a>
+  <a href="kanmachi63_yearly.html">📊 年別</a>
+  <a href="kanmachi63_heatmap.html" class="nav-active">🌡️ ヒートマップ</a>
+</nav>
 <h1>🌡️ 上町63 出演日数ヒートマップ</h1>
 <p class="meta">集計日時: {now} ／ 総合TOP30 × 年別出演日数</p>
 <div class="wrap">
