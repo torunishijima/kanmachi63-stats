@@ -277,7 +277,6 @@ function showPlayer(name) {{
       <td class="co-name" onclick="showPlayer('${{c.name.replace(/'/g, "\\\\'")}}')">
         ${{c.name}}
       </td>
-      <td class="co-inst">${{cp.inst || ''}}</td>
       <td class="co-days">${{c.days}}</td>
       <td class="co-pct"><div class="bar-bg"><div class="bar-fill" style="width:${{pct}}%"></div></div></td>
     </tr>`;
@@ -300,7 +299,7 @@ function showPlayer(name) {{
     <h3>共演者ランキング</h3>
     <table class="co-table">
       <thead><tr>
-        <th>順位</th><th>名前</th><th>パート</th><th>共演日数</th><th></th>
+        <th>順位</th><th>名前</th><th>共演日数</th><th></th>
       </tr></thead>
       <tbody>${{coRows || '<tr><td colspan=5 style="color:#aaa;text-align:center">データなし</td></tr>'}}</tbody>
     </table>

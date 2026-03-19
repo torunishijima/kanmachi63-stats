@@ -136,7 +136,6 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
                 f'<tr>'
                 f'<td class="rank" style="{bg}">{rank}</td>'
                 f'<td class="name"><a href="kanmachi63_coplayers.html#{quote(name)}">{html.escape(name)}</a></td>'
-                f'<td class="inst">{html.escape(" / ".join(sorted(info["instruments"])))}</td>'
                 f'<td class="count">{info["count"]}</td>'
                 f'</tr>\n'
             )
@@ -147,7 +146,7 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
     <span>延べ出演日数: <strong>{total_appearances}</strong></span>
   </div>
   <table>
-    <thead><tr><th>順位</th><th>名前</th><th>パート</th><th>出演日数</th></tr></thead>
+    <thead><tr><th>順位</th><th>名前</th><th>出演日数</th></tr></thead>
     <tbody>{rows_html}</tbody>
   </table>
 </div>
