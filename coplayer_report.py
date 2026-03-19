@@ -127,7 +127,7 @@ def write_html(total, co, instruments, path):
 
   /* ナビゲーションバー */
   .sitenav {{ display:flex; align-items:center; background:#222; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }}
-  .sitenav a {{ color:#FFFFCC; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }}
+  .sitenav a {{ color:#fff; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }}
   .sitenav a:hover {{ background:#333; color:#fff; }}
   .sitenav a.nav-active {{ background:#CC4400; color:#fff; font-weight:bold; }}
   .snav-home {{ color:#CC4400 !important; border-right:1px solid #444; }}
@@ -162,7 +162,7 @@ def write_html(total, co, instruments, path):
     display:flex; justify-content:space-between; align-items:center;
   }}
   .player-item:hover {{ background:#333; }}
-  .player-item.active {{ background:#CC4400; border-left-color:#FFFFCC; color:#fff; }}
+  .player-item.active {{ background:#CC4400; border-left-color:#fff; color:#fff; }}
   .player-item .pname {{ flex:1; }}
   .player-item .ptotal {{ font-size:.8em; color:#888; margin-left:.5em; }}
   .player-item.active .ptotal {{ color:#ffe; }}
@@ -176,7 +176,7 @@ def write_html(total, co, instruments, path):
   .detail-name {{ font-size:1.6em; font-weight:bold; color:#CC4400; }}
   .detail-meta {{ color:#888; font-size:.88em; margin-top:.3em; }}
   .detail-meta span {{ margin-right:1.5em; }}
-  .detail-meta .inst {{ color:#FFFFCC; }}
+  .detail-meta .inst {{ color:#fff; }}
   .detail-meta .days {{ color:#CC4400; font-weight:bold; }}
 
   h3 {{ font-size:1em; color:#888; margin:1.2em 0 .5em; border-bottom:1px solid #333; padding-bottom:.3em; }}
@@ -189,7 +189,7 @@ def write_html(total, co, instruments, path):
   .co-table tr:last-child td {{ border-bottom:none; }}
   .co-table tr:hover td {{ background:#2a2a2a; }}
   .co-rank {{ width:3em; text-align:center; color:#666; font-size:.85em; }}
-  .co-name {{ cursor:pointer; color:#FFFFCC; white-space:nowrap; }}
+  .co-name {{ cursor:pointer; color:#fff; white-space:nowrap; }}
   .co-name:hover {{ text-decoration:underline; }}
   .co-days {{ text-align:center; font-weight:bold; color:#CC4400; width:5em; }}
   .co-inst {{ color:#888; font-size:.82em; }}

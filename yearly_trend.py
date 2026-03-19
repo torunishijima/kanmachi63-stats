@@ -108,7 +108,7 @@ _COMMON_CSS = """
     overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch;
   }
   .sitenav a {
-    color:#FFFFCC; text-decoration:none;
+    color:#fff; text-decoration:none;
     padding:0 .9em; height:40px; line-height:40px;
     font-size:.82em; white-space:nowrap; display:inline-block;
   }
@@ -180,7 +180,7 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
   td {{ padding:6px 10px; border-bottom:1px solid #333; font-size:.85em; }}
   .rank {{ width:2.5em; text-align:center; font-weight:bold; color:#aaa; border-radius:3px; }}
   .count {{ text-align:center; font-weight:bold; color:#CC4400; width:4.5em; }}
-  .inst {{ color:#FFFFCC; font-size:.8em; }}
+  .inst {{ color:#fff; font-size:.8em; }}
   @media (max-width:480px) {{
     .inst {{ display:none; }}
   }}
