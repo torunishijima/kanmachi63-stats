@@ -6,34 +6,34 @@
 <title>上町63 出演履歴</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#f0f2f5; color:#222; }
+  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#111; color:#eee; }
 
   /* ナビゲーションバー */
-  .sitenav { display:flex; align-items:center; background:#2c3e50; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }
-  .sitenav a { color:#bdc3c7; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }
-  .sitenav a:hover { background:#34495e; color:#ecf0f1; }
-  .sitenav a.nav-active { background:#1abc9c; color:#fff; font-weight:bold; }
-  .snav-home { color:#c8a84b !important; border-right:1px solid #3d5166; }
+  .sitenav { display:flex; align-items:center; background:#222; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }
+  .sitenav a { color:#FFFFCC; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }
+  .sitenav a:hover { background:#333; color:#fff; }
+  .sitenav a.nav-active { background:#FF6600; color:#fff; font-weight:bold; }
+  .snav-home { color:#FF6600 !important; border-right:1px solid #444; }
 
   .container { display:flex; height:calc(100vh - 40px); }
   .left-panel {
-    width:300px; min-width:200px; background:#2c3e50; color:#ecf0f1;
+    width:300px; min-width:200px; background:#222; color:#eee;
     display:flex; flex-direction:column; flex-shrink:0;
   }
   .right-panel { flex:1; padding:1.5em; overflow-y:auto; }
 
-  .panel-title { padding:.8em 1em .4em; font-size:.85em; color:#95a5a6; letter-spacing:.05em; }
+  .panel-title { padding:.8em 1em .4em; font-size:.85em; color:#888; letter-spacing:.05em; }
   .search-box {
     margin:.3em .8em .6em; padding:.5em .8em;
     border:none; border-radius:6px; width:calc(100% - 1.6em);
-    font-size:.9em; background:#34495e; color:#ecf0f1; outline:none;
+    font-size:.9em; background:#333; color:#eee; outline:none;
   }
-  .search-box::placeholder { color:#7f8c8d; }
+  .search-box::placeholder { color:#666; }
   .list-wrap { flex:1; overflow:hidden; position:relative; }
   .list-wrap::after {
     content:''; pointer-events:none;
     position:absolute; bottom:0; left:0; right:0; height:3em;
-    background:linear-gradient(transparent, #2c3e50);
+    background:linear-gradient(transparent, #222);
   }
   .player-list { height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
   .player-item {
@@ -41,65 +41,65 @@
     border-left:3px solid transparent;
     display:flex; justify-content:space-between; align-items:center;
   }
-  .player-item:hover { background:#34495e; }
-  .player-item.active { background:#1abc9c; border-left-color:#f1c40f; color:#fff; }
+  .player-item:hover { background:#333; }
+  .player-item.active { background:#FF6600; border-left-color:#FFFFCC; color:#fff; }
   .player-item .pname { flex:1; }
-  .player-item .ptotal { font-size:.8em; color:#95a5a6; margin-left:.5em; }
-  .player-item.active .ptotal { color:#dff; }
+  .player-item .ptotal { font-size:.8em; color:#888; margin-left:.5em; }
+  .player-item.active .ptotal { color:#ffe; }
 
   .placeholder {
     display:flex; align-items:center; justify-content:center;
-    height:60%; color:#aaa; font-size:1.1em;
+    height:60%; color:#666; font-size:1.1em;
   }
   .detail-header { margin-bottom:1.2em; }
-  .detail-name { font-size:1.6em; font-weight:bold; color:#2c3e50; }
-  .detail-meta { color:#777; font-size:.88em; margin-top:.3em; }
+  .detail-name { font-size:1.6em; font-weight:bold; color:#FF6600; }
+  .detail-meta { color:#888; font-size:.88em; margin-top:.3em; }
   .detail-meta span { margin-right:1.5em; }
-  .detail-meta .inst { color:#2980b9; }
-  .detail-meta .days { color:#c0392b; font-weight:bold; }
+  .detail-meta .inst { color:#FFFFCC; }
+  .detail-meta .days { color:#FF6600; font-weight:bold; }
 
   .links { margin:.6em 0 1em; font-size:.85em; }
-  .links a { color:#2980b9; text-decoration:none; margin-right:1.2em; }
-  .links a:hover { text-decoration:underline; }
+  .links a { color:#FFFFCC; text-decoration:none; margin-right:1.2em; }
+  .links a:hover { text-decoration:underline; color:#FF6600; }
 
   /* 年タブ */
   .yr-tabs { display:flex; flex-wrap:wrap; gap:.35em; margin:.2em 0 1.2em; }
   .yr-tab {
-    border:1px solid #ddd; background:#fff; padding:.3em .7em;
-    border-radius:4px; cursor:pointer; font-size:.82em; color:#555;
+    border:1px solid #444; background:#222; padding:.3em .7em;
+    border-radius:4px; cursor:pointer; font-size:.82em; color:#aaa;
   }
-  .yr-tab:hover { background:#eef2f7; border-color:#aaa; }
-  .yr-tab.active { background:#2c3e50; color:#fff; border-color:#2c3e50; font-weight:bold; }
+  .yr-tab:hover { background:#333; border-color:#666; }
+  .yr-tab.active { background:#FF6600; color:#fff; border-color:#FF6600; font-weight:bold; }
 
-  h3 { font-size:1em; color:#555; margin:1.2em 0 .5em; border-bottom:1px solid #ddd; padding-bottom:.3em; }
+  h3 { font-size:1em; color:#888; margin:1.2em 0 .5em; border-bottom:1px solid #333; padding-bottom:.3em; }
 
   /* 年グループ */
   .year-group { margin-bottom:1.5em; }
   .year-label {
     font-size:.85em; font-weight:bold; color:#fff;
-    background:#2c3e50; display:inline-block;
+    background:#333; display:inline-block;
     padding:.2em .8em; border-radius:3px; margin-bottom:.5em;
   }
 
   /* 日付ごとの行 */
   .date-row {
     display:flex; align-items:flex-start; gap:1em;
-    padding:.5em 0; border-bottom:1px solid #eee; font-size:.88em;
+    padding:.5em 0; border-bottom:1px solid #333; font-size:.88em;
   }
   .date-row:last-child { border-bottom:none; }
   .date-label {
-    min-width:5.5em; color:#555; font-weight:bold; flex-shrink:0; padding-top:.1em;
+    min-width:5.5em; color:#888; font-weight:bold; flex-shrink:0; padding-top:.1em;
   }
   .co-chips { display:flex; flex-wrap:wrap; gap:.35em; }
   .chip {
-    background:#eef2f7; border-radius:4px; padding:.2em .6em;
+    background:#2a2a2a; border-radius:4px; padding:.2em .6em;
     font-size:.85em; cursor:pointer; white-space:nowrap;
   }
-  .chip:hover { background:#d4e6f1; }
-  .chip .chip-inst { color:#7f8c8d; font-size:.8em; margin-left:.3em; }
-  .no-co { color:#aaa; font-size:.85em; font-style:italic; }
+  .chip:hover { background:#FF6600; color:#fff; }
+  .chip .chip-inst { color:#888; font-size:.8em; margin-left:.3em; }
+  .no-co { color:#666; font-size:.85em; font-style:italic; }
 
-  .meta { color:#888; font-size:.8em; padding:.5em 1em; border-top:1px solid #3d5166; }
+  .meta { color:#666; font-size:.8em; padding:.5em 1em; border-top:1px solid #444; }
 
   @media (max-width: 640px) {
     .container { flex-direction:column; height:auto; min-height:calc(100vh - 40px); }
@@ -123,7 +123,7 @@
     <div class="panel-title">出演者 (350名)</div>
     <input class="search-box" type="text" id="search" placeholder="名前で絞り込み…" oninput="filterList()">
     <div class="list-wrap"><div class="player-list" id="playerList"></div></div>
-    <div class="meta">集計: 2026-03-19 13:54<br>対象: 2012年8月〜2026年4月</div>
+    <div class="meta">集計: 2026-03-19 14:13<br>対象: 2012年8月〜2026年4月</div>
   </div>
 
   <div class="right-panel" id="rightPanel">

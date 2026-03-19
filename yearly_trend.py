@@ -97,24 +97,24 @@ def rank_color(rank: int) -> str:
     return ''
 
 _COMMON_CSS = """
-  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#f5f5f5; color:#222; }
-  h1 { margin:0; padding:.8em 1em .4em; color:#2c3e50; font-size:1.3em; }
+  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#111; color:#eee; }
+  h1 { margin:0; padding:.8em 1em .4em; color:#FF6600; font-size:1.3em; }
   p.meta { margin:0 1em .8em; color:#888; font-size:.82em; }
   .name a, .hname a { color: inherit; text-decoration: none; }
-  .name a:hover, .hname a:hover { color: #1abc9c; text-decoration: underline; }
+  .name a:hover, .hname a:hover { color: #FF6600; text-decoration: underline; }
   /* ナビゲーションバー */
   .sitenav {
-    display:flex; align-items:center; background:#2c3e50; height:40px;
+    display:flex; align-items:center; background:#222; height:40px;
     overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch;
   }
   .sitenav a {
-    color:#bdc3c7; text-decoration:none;
+    color:#FFFFCC; text-decoration:none;
     padding:0 .9em; height:40px; line-height:40px;
     font-size:.82em; white-space:nowrap; display:inline-block;
   }
-  .sitenav a:hover { background:#34495e; color:#ecf0f1; }
-  .sitenav a.nav-active { background:#1abc9c; color:#fff; font-weight:bold; }
-  .snav-home { color:#c8a84b !important; border-right:1px solid #3d5166; }
+  .sitenav a:hover { background:#333; color:#fff; }
+  .sitenav a.nav-active { background:#FF6600; color:#fff; font-weight:bold; }
+  .snav-home { color:#FF6600 !important; border-right:1px solid #444; }
 """
 
 def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
@@ -166,22 +166,22 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
 <title>上町63 年別ランキング</title>
 <style>
 {_COMMON_CSS}
-  .tabs {{ padding:.5em 1em 0; border-bottom:2px solid #c8a84b; overflow-x:auto; white-space:nowrap; }}
+  .tabs {{ padding:.5em 1em 0; border-bottom:2px solid #FF6600; overflow-x:auto; white-space:nowrap; }}
   .tab-btn {{
-    border:none; background:#ddd; padding:.4em .7em; margin-right:3px;
-    border-radius:4px 4px 0 0; cursor:pointer; font-size:.85em; color:#555;
+    border:none; background:#333; padding:.4em .7em; margin-right:3px;
+    border-radius:4px 4px 0 0; cursor:pointer; font-size:.85em; color:#aaa;
   }}
-  .tab-btn.active {{ background:#c8a84b; color:#fff; font-weight:bold; }}
+  .tab-btn.active {{ background:#FF6600; color:#fff; font-weight:bold; }}
   .tab-pane {{ display:none; padding:.8em 1em; overflow-x:auto; }}
   .tab-pane.active {{ display:block; }}
-  .year-summary {{ margin-bottom:.8em; font-size:.88em; color:#555; }}
+  .year-summary {{ margin-bottom:.8em; font-size:.88em; color:#aaa; }}
   .year-summary span {{ margin-right:1.5em; }}
-  table {{ border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.1); width:100%; max-width:680px; }}
-  th {{ background:#2c3e50; color:#fff; padding:7px 10px; text-align:left; font-size:.82em; }}
-  td {{ padding:6px 10px; border-bottom:1px solid #eee; font-size:.85em; }}
-  .rank {{ width:2.5em; text-align:center; font-weight:bold; color:#555; border-radius:3px; }}
-  .count {{ text-align:center; font-weight:bold; color:#c0392b; width:4.5em; }}
-  .inst {{ color:#2980b9; font-size:.8em; }}
+  table {{ border-collapse:collapse; background:#222; box-shadow:0 1px 3px rgba(0,0,0,.4); width:100%; max-width:680px; }}
+  th {{ background:#111; color:#eee; padding:7px 10px; text-align:left; font-size:.82em; }}
+  td {{ padding:6px 10px; border-bottom:1px solid #333; font-size:.85em; }}
+  .rank {{ width:2.5em; text-align:center; font-weight:bold; color:#aaa; border-radius:3px; }}
+  .count {{ text-align:center; font-weight:bold; color:#FF6600; width:4.5em; }}
+  .inst {{ color:#FFFFCC; font-size:.8em; }}
   @media (max-width:480px) {{
     .inst {{ display:none; }}
   }}
@@ -250,20 +250,20 @@ def write_heatmap(by_year: dict[int, dict], path: str):
 <style>
 {_COMMON_CSS}
   .wrap {{ overflow-x:auto; padding:0 1em 2em; -webkit-overflow-scrolling:touch; }}
-  table {{ border-collapse:collapse; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.1); font-size:.82em; white-space:nowrap; }}
-  th {{ background:#2c3e50; color:#fff; padding:5px 10px; }}
-  thead th:first-child {{ position:sticky; left:0; z-index:2; background:#2c3e50; }}
-  td {{ padding:4px 8px; border:1px solid #eee; text-align:center; }}
-  .hname {{ text-align:left !important; padding-left:12px !important; font-weight:bold; min-width:120px; white-space:nowrap; position:sticky; left:0; background:#fff; z-index:1; box-shadow:2px 0 4px rgba(0,0,0,.08); }}
-  .heat-0 {{ color:#ccc; }}
+  table {{ border-collapse:collapse; background:#222; box-shadow:0 1px 3px rgba(0,0,0,.4); font-size:.82em; white-space:nowrap; }}
+  th {{ background:#111; color:#eee; padding:5px 10px; }}
+  thead th:first-child {{ position:sticky; left:0; z-index:2; background:#111; }}
+  td {{ padding:4px 8px; border:1px solid #333; text-align:center; }}
+  .hname {{ text-align:left !important; padding-left:12px !important; font-weight:bold; min-width:120px; white-space:nowrap; position:sticky; left:0; background:#222; z-index:1; box-shadow:2px 0 4px rgba(0,0,0,.4); }}
+  .heat-0 {{ color:#555; }}
   .heat-n {{
-    background: color-mix(in srgb, #e74c3c var(--pct), #fff);
-    color: #333; font-weight:bold;
+    background: color-mix(in srgb, #FF6600 var(--pct), #222);
+    color: #eee; font-weight:bold;
   }}
   .heat-link {{ color:inherit; text-decoration:none; display:block; }}
   .heat-link:hover {{ text-decoration:underline; }}
-  .total-col {{ background:#1a252f !important; }}
-  .total-cell {{ font-weight:bold; color:#c0392b; background:#f9f0f0; border-left:2px solid #c8a84b; }}
+  .total-col {{ background:#000 !important; }}
+  .total-cell {{ font-weight:bold; color:#FF6600; background:#1a0d00; border-left:2px solid #FF6600; }}
 </style>
 </head>
 <body>
