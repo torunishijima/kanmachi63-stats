@@ -1,45 +1,45 @@
 ﻿name,instruments,count
 馬場孝喜,ag / gt / pf,383
-竹内直,as / as.ts / pf / reed / ts / ts.as / ts.bcl / ts.etc / ts.fl / ts.fl.bcl / ts.ss / ts.ts,281
-橋爪亮督,ctrinics.ts / ts / ts.ryricon,260
+竹内直,as / as.ts / pf / reed / ts / ts.as / ts.bcl / ts.etc / ts.fl / ts.fl.bcl / ts.ss / ts.ts,279
+橋爪亮督,ctrinics.ts / ts / ts.ryricon,261
 西嶋徹,b / vln / wb / wb.vln,239
-かみむら泰一,as / pf / ss.ts / ts / ts.ss,235
-小牧良平,b / wb,224
+かみむら泰一,as / pf / ss.ts / ts / ts.ss,234
+小牧良平,b / wb,226
 西山瞳,pf,212
 鈴木央紹,ts,210
 佐藤“ハチ”恭彦,b,177
-池長一美,ds / gt,171
+池長一美,ds / gt,172
 今泉総之輔,ds,169
-栗田妙子,pf / pf.pianica,164
 清水翠,pf / vo,164
+栗田妙子,pf / pf.pianica,163
 福冨博,gt,163
-青木タイセイ,eb / etc / tb / tb.eb / tb.etc,162
 東海林由孝,gt,160
-大村亘,ds / tabla.ds,151
+青木タイセイ,eb / etc / tb / tb.eb / tb.etc,160
+大村亘,ds / tabla.ds,152
 山口真文,ts / ts.ss,150
 吉岡大輔,ds,142
-市野元彦,b / gt,137
+市野元彦,b / gt,138
 リン・ヘイテツ,pf,135
+田中信正,pf / ts,132
 落合康介,b / ds / wb,132
-田中信正,pf / ts,131
 中牟礼貞則,b / gt,129
+原大力,ds,126
 小太刀のばら,pf / ts,126
-原大力,ds,125
 吉野弘志,b,119
-カイドーユタカ,b,118
+カイドーユタカ,b,117
 佐藤浩一,pf,117
-安東昇,b / wb,112
-座小田諒一,b / wb,112
+座小田諒一,b / wb,113
+安東昇,b / wb,111
 則武諒,ds,107
 江藤良人,ds,94
 滝野聡,gt,86
-渋谷毅,pf,81
 古木佳祐,b,80
+渋谷毅,pf,80
 岡田ケイタ,ds,75
 清野拓巳,gt,73
 俵山昌之,b,67
-蜂谷真紀,pf.vo / vo / vo.pf,66
 服部正嗣,ds,65
+蜂谷真紀,pf.vo / vo / vo.pf,65
 露木達也,ag / gt,60
 須川崇志,b,58
 千葉広樹,b,57
@@ -49,19 +49,19 @@ Chaka,Vo / vo,50
 高樹レイ,vo,48
 山本昌広,as,47
 布施音人,pf,46
-池戸祐太,gt,45
+池戸祐太,gt,46
 坂崎拓也,b,42
 甲斐正樹,b / wb,42
-石渡明廣,gt,42
+石渡明廣,gt,41
+白石美徳,ds,40
 浅川太平,pf,39
-白石美徳,ds,39
 塩谷博之,as / pf / ss,38
 纐纈雅代,as,35
 鈴木勲,b,34
 土井徳浩,cl,33
-清水麻八子,vo,33
 岡田ヨシヒロ,ds,32
 岡田佳太,ds,32
+清水麻八子,vo,32
 山崎隼,ds,31
 米田正義,pf,31
 西村和彦,pf,31
@@ -70,32 +70,32 @@ Chaka,Vo / vo,50
 Josen,gt,28
 菅原高志,ds,28
 閑喜弦介,ag / eg / gt,27
-小畑和彦,ag / gt,26
-酒井俊,vo,26
+小畑和彦,ag / gt,25
 道下和彦,gt,25
+酒井俊,vo,25
 田中徳崇,ds,24
 萬恭隆,b,24
 中村善郎,ag.vo / agt.vo / gt.vo / vo.ag / vo.agt / vo.gt,22
 井上淑彦,ts,21
 東保光,b,20
 吉本章紘,as / ts,18
-塙正貴,as / ss,17
+塙正貴,as,17
 奧村美里,pf,17
 清水昭好,b,17
 酒井麻生代,fl,17
 類家心平,tp,17
 Satsuki,vo,16
-ませひろこ,as.ss / ss,16
+定仙哲也,gt,16
 山中一毅,as,16
 山田晃路,b,16
 津嘉山梢,pf,16
+ませひろこ,as.ss / ss,15
 外山明,ds,15
-定仙哲也,gt,15
 工藤精,b,15
+望月慎一郎,pf / pf.shnrh / pf.shy,15
 清水絵理子,pf,15
 牧知恵子,pf,15
 金森基,b,15
-望月慎一郎,pf / pf.shnrh / pf.shy,14
 田中光栄,Harmo / hamo / har / harm / harmo,14
 石川広行,tp / ts,14
 宮野弘紀,ag / gt,13
@@ -116,12 +116,12 @@ Satsuki,vo,16
 小山道之,gt,10
 小田島伸樹,gt,10
 成田祐一,gt / pf,10
+斉藤良,ds,10
 森下周央彌,gt,10
 西島芳,pf / pf.vo,10
 角田健,ds,10
 Todd Nicholson,b,9
 岡田佳大,ds,9
-斉藤良,ds,9
 田村博,pf,9
 秋元修,ds,9
 高内春彦,ag / gt,9
@@ -131,6 +131,7 @@ Todd Nicholson,b,9
 山田穣,as,8
 市川秀男,pf,8
 平岡遊一郎,gt,8
+沢田穣治,b,8
 海野俊輔,ds,8
 菅野浩,as,8
 藤巻鉄郎,ds,8
@@ -140,24 +141,22 @@ Todd Nicholson,b,9
 古野光昭,b,7
 坂井紅介,b,7
 堀秀彰,pf,7
-安井鉄太郎,ds,7
 小林洋子,pf,7
 川本睦子,vo,7
 市尾優作,gt,7
 林祐市,pf,7
-沢田穣治,b,7
 鹿野亮介,as,7
 ファビオ・ボッタッツォ,gt,6
 マサ・カマグチ,b,6
 井上銘,gt,6
 佐藤芳明,acc,6
+安井鉄太郎,ds,6
 小橋拓弥,gt,6
 岩見継吾,b,6
 杉山寛,ds,6
 松尾由堂,gt,6
 田中菜緒子,pf,6
 遠藤ふみ,pf,6
-鈴木瑤子,pf,6
 カモノリコ,pf,5
 佐藤節雄,ds,5
 大塚義将,b,5
@@ -170,7 +169,6 @@ Todd Nicholson,b,9
 久保田浩,pf,4
 伊藤志宏,pf,4
 佐瀬悠輔,tp,4
-加藤吉樹,oud,4
 北澤大樹,ds,4
 吉良創太,ds,4
 村田千紘,tb / tp,4
@@ -182,10 +180,12 @@ Todd Nicholson,b,9
 津上研太,as,4
 浅利史花,gt,4
 石井信義,gt,4
+鈴木瑤子,pf,4
 長谷川ガク,ds,4
 ジョー・ローゼンバーグ,as / ss,3
 ハクエイ・キム,pf,3
 加藤一平,gt,3
+加藤吉樹,oud,3
 加藤秀,eb,3
 大村守弘,b,3
 太田朱美,fl,3
@@ -235,6 +235,7 @@ Todd Nicholson,b,9
 福田雄也,gt,2
 禿耕平,gt,2
 若井俊也,b,2
+藤井信雄,ds,2
 遠藤定,b,2
 野力奏一,pf,2
 阿部真武,eb,2
@@ -246,7 +247,6 @@ Rosario Giuliani,as,1
 Satoko,vo,1
 かむろ耕平,gt,1
 なら春子,pf,1
-イスル・キム,pf,1
 エルセン・プライス,wb,1
 マーティー・ホロベック,b,1
 ユカリ,fl,1
@@ -289,7 +289,6 @@ Satoko,vo,1
 山﨑隼,ds,1
 岩石功,b,1
 岸徹至,b,1
-市川莉子,vo,1
 布川俊樹,gt,1
 平賀マリカ,vo,1
 後藤勝,vo,1
