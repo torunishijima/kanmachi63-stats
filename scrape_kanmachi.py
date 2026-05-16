@@ -114,7 +114,7 @@ def to_halfwidth(text: str) -> str:
 _KNOWN_INSTRUMENTS = {
     'pf', 'gt', 'ag', 'eg', 'b', 'eb', 'ds', 'vo', 'fl', 'cl', 'tp', 'tb',
     'ts', 'as', 'bs', 'ss', 'vc', 'vn', 'vln', 'va', 'org', 'syn', 'key',
-    'perc', 'harp', 'oud', 'sax', 'harm', 'har', 'harmo', 'hamo', 'acc', 'mand', 'vib', 'mar',
+    'perc', 'tabla', 'harp', 'oud', 'sax', 'harm', 'har', 'harmo', 'hamo', 'acc', 'mand', 'vib', 'mar',
     'etc', 'mc', 'dj', 'rap', 'cho', 'wb', 'reed',
 }
 
