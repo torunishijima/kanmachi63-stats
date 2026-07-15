@@ -7,70 +7,85 @@
 <style>
   :root {
     --bg: #0f1115;
-    --panel: #171a20;
-    --panel-2: #20242c;
-    --line: #2c313b;
+    --panel: #181719;
+    --panel-2: #222024;
+    --paper: #f1e6d2;
+    --line: #353137;
     --text: #f1f3f5;
-    --muted: #9aa3ad;
-    --accent: #ff6a2a;
-    --accent-2: #f2c94c;
+    --muted: #aaa2a0;
+    --accent: #d65c32;
+    --accent-2: #d5a84f;
+    --red: #8f2d25;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: "Hiragino Sans", "Meiryo", sans-serif;
     background:
-      radial-gradient(circle at top left, rgba(255,106,42,.18), transparent 32rem),
-      linear-gradient(180deg, #12161d 0%, var(--bg) 44%);
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+      radial-gradient(circle at 18% 0, rgba(214,92,50,.22), transparent 27rem),
+      radial-gradient(circle at 84% 14%, rgba(213,168,79,.12), transparent 22rem),
+      linear-gradient(180deg, #161316 0%, var(--bg) 46%);
+    background-size: 34px 34px, auto, auto, auto;
     color: var(--text);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2.2em 1em 1.5em;
+    padding: 1.1em;
   }
 
+  .page {
+    width: min(1080px, 100%);
+    margin: 0 auto;
+  }
   .hero {
-    text-align: center;
-    margin-bottom: 1.4em;
-    max-width: 720px;
+    min-height: 44vh;
+    display: flex;
+    align-items: end;
+    padding: 2.4em 0 1.4em;
+    max-width: 760px;
+  }
+  .kicker {
+    color: var(--accent-2);
+    font-size: .78em;
+    letter-spacing: .08em;
+    margin-bottom: .9em;
   }
   .hero h1 {
-    font-size: 2.1em;
+    font-size: clamp(2.2em, 6vw, 5.8em);
     font-weight: bold;
+    letter-spacing: 0;
+    line-height: .96;
     color: var(--text);
-    margin-bottom: .4em;
+    margin-bottom: .25em;
   }
   .hero p {
     color: var(--muted);
-    font-size: .95em;
+    font-size: .98em;
     line-height: 1.7;
+    max-width: 36em;
   }
   .hero a { color: var(--accent) !important; }
   .hero .period {
     display: inline-block;
-    margin-top: .8em;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.09);
+    margin-top: 1em;
+    background: rgba(241,230,210,.07);
+    border: 1px solid rgba(241,230,210,.13);
     border-radius: 999px;
-    padding: .45em .95em;
+    padding: .5em .95em;
     font-size: .85em;
-    color: #fff3c4;
+    color: #f5d99d;
   }
-
   .cards {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: .8em;
-    max-width: 900px;
     width: 100%;
   }
 
   .card {
-    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    background: linear-gradient(180deg, rgba(34,32,36,.94), rgba(24,23,25,.96));
     border: 1px solid var(--line);
     border-radius: 8px;
     padding: 1em;
-    min-height: 108px;
+    min-height: 112px;
     text-decoration: none;
     color: inherit;
     transition: transform .15s, border-color .15s, background .15s;
@@ -81,8 +96,8 @@
   }
   .card:hover {
     transform: translateY(-2px);
-    border-color: var(--accent);
-    background: linear-gradient(180deg, #282d36, var(--panel));
+    border-color: rgba(213,168,79,.65);
+    background: linear-gradient(180deg, #2c2829, var(--panel));
   }
   .card-mark {
     width: 34px;
@@ -101,23 +116,21 @@
     stroke-linejoin: round;
   }
   .card-mark .soft { opacity: .42; }
-  .card .title { font-size: .98em; font-weight: bold; color: var(--text); line-height: 1.35; }
-
+  .card .title { font-size: 1em; font-weight: bold; color: var(--text); line-height: 1.35; }
   .about {
-    max-width: 640px;
+    max-width: 760px;
     width: 100%;
-    margin: 0 0 1.3em;
+    margin: 1.25em 0 1.3em;
     color: var(--muted);
     font-size: .88em;
     line-height: 1.8;
-    text-align: center;
   }
   .note {
-    max-width: 640px;
+    max-width: 760px;
     width: 100%;
     margin-top: 1.3em;
     padding: .9em 1.2em;
-    background: rgba(255,255,255,.04);
+    background: rgba(241,230,210,.045);
     border: 1px solid var(--line);
     border-left: 3px solid var(--accent);
     border-radius: 6px;
@@ -135,30 +148,40 @@
   .footer a { color: #737b85 !important; }
 
   @media (max-width: 760px) {
-    body { align-items: stretch; padding: 1.2em .9em; }
-    .hero { text-align: left; margin-bottom: 1em; }
-    .hero h1 { font-size: 1.55em; }
-    .about { text-align: left; margin-bottom: 1em; }
+    body { padding: 1em .85em; }
+    .hero {
+      min-height: auto;
+      padding: 1.1em 0 .9em;
+    }
+    .hero h1 { font-size: 2.35em; }
+    .about { margin-bottom: 1em; }
     .about br { display: none; }
-    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65em; }
-    .card { min-height: 96px; padding: .9em; }
+    .cards { grid-template-columns: 1fr; gap: .55em; }
+    .card {
+      min-height: 68px;
+      padding: .85em .9em;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      justify-content: start;
+      gap: .8em;
+    }
+    .card-mark { grid-row: 1 / span 2; }
     .note { margin-top: 1em; }
   }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <h1>上町63 出演者統計</h1>
-  <p>横浜・関内のジャズバー <a href="http://kanmachi63.blog.fc2.com/" style="text-decoration:none;">上町63</a> の出演者データを集計した非公式サイトです。</p>
-  <span class="period">2012年8月 〜 2026年8月 ／ 167ヶ月 ／ 358名</span>
-</div>
-
-<div class="about">
-  上町63 は横浜・関内にある老舗のジャズバーです。<br>
-  このサイトは、店のブログに掲載された月次スケジュール記事をもとに、<br>
-  出演者の名前・楽器・出演日をプログラムで自動集計したものです。
-</div>
+<main class="page">
+<section class="hero">
+  <div>
+    <div class="kicker">KANMACHI 63 ARCHIVE</div>
+    <h1>上町63<br>出演者統計</h1>
+    <p>横浜・関内のジャズバー <a href="http://kanmachi63.blog.fc2.com/" style="text-decoration:none;">上町63</a> の月次スケジュールから、出演者・共演関係・年ごとの変化を集計した非公式アーカイブです。</p>
+    <span class="period">2012年8月 〜 2026年8月 ／ 167ヶ月</span>
+  </div>
+</section>
 
 <div class="cards">
   <a class="card" href="kanmachi63_history.html">
@@ -213,6 +236,12 @@
   </a>
 </div>
 
+<div class="about">
+  上町63 は横浜・関内にある老舗のジャズバーです。<br>
+  このサイトは、店のブログに掲載された月次スケジュール記事をもとに、
+  出演者の名前・楽器・出演日をプログラムで自動集計したものです。
+</div>
+
 <div class="note">
   <strong>【データについて】</strong><br>
   集計はブログ記事のテキストをプログラムで解析したものです。ブログ上の表記ゆれ・誤字・フォーマットの揺れにより、名前の表記が正確でない場合や、同一人物が別名で重複して集計されている場合があります。また、中止・変更になった公演が一部含まれている可能性があります。あくまで非公式の個人集計であり、内容の正確性は保証しません。
@@ -221,6 +250,7 @@
 <div class="footer">
   データ出典: <a href="http://kanmachi63.blog.fc2.com/" style="color:#555">上町63 ブログ</a>
 </div>
+</main>
 
 </body>
 </html>

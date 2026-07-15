@@ -131,6 +131,7 @@ _COMMON_CSS = """
 
 def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
     years = sorted(by_year.keys())
+    display_years = sorted(years, reverse=True)
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
     latest_year = max(years)
 
@@ -166,7 +167,7 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
 
     tab_buttons = ''.join(
         f'<button class="tab-btn{" active" if y == latest_year else ""}" onclick="showTab({y})" id="btn-{y}">{y}</button>'
-        for y in years
+        for y in display_years
     )
 
     content = f"""<!DOCTYPE html>
@@ -230,6 +231,7 @@ showTab({latest_year});
 
 def write_heatmap(by_year: dict[int, dict], path: str):
     years = sorted(by_year.keys())
+    display_years = sorted(years, reverse=True)
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
 
     total_counts = defaultdict(int)
@@ -238,11 +240,11 @@ def write_heatmap(by_year: dict[int, dict], path: str):
             total_counts[name] += info['count']
     top_names = [n for n, _ in sorted(total_counts.items(), key=lambda x: -x[1])]
 
-    heat_header = ''.join(f'<th>{y}</th>' for y in years) + '<th class="total-col">合計</th>'
+    heat_header = ''.join(f'<th>{y}</th>' for y in display_years) + '<th class="total-col">合計</th>'
     heat_rows = ''
     for name in top_names:
         cells = ''
-        for year in years:
+        for year in display_years:
             cnt = by_year[year].get(name, {}).get('count', 0)
             if cnt == 0:
                 cells += '<td class="heat-0">—</td>'
