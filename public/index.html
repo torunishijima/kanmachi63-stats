@@ -85,14 +85,14 @@
     border: 1px solid var(--line);
     border-radius: 8px;
     padding: 1em;
-    min-height: 112px;
+    min-height: 82px;
     text-decoration: none;
     color: inherit;
     transition: transform .15s, border-color .15s, background .15s;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: .9em;
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    align-items: center;
+    gap: .85em;
   }
   .card:hover {
     transform: translateY(-2px);
@@ -160,13 +160,9 @@
     .card {
       min-height: 68px;
       padding: .85em .9em;
-      display: grid;
       grid-template-columns: 42px 1fr;
-      align-items: center;
-      justify-content: start;
       gap: .8em;
     }
-    .card-mark { grid-row: 1 / span 2; }
     .note { margin-top: 1em; }
   }
 </style>
