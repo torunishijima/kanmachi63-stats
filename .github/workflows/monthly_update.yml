@@ -49,6 +49,7 @@ jobs:
           git add kanmachi63_stats.csv kanmachi63_stats.html \
                   kanmachi63_yearly.csv kanmachi63_yearly.html \
                   kanmachi63_coplayers.html kanmachi63_history.html \
+                  kanmachi63_heatmap.html \
                   nishijima_coplayers.csv index.html public/
           git diff --cached --quiet || git commit -m "chore: monthly stats update $(date +'%Y-%m')"
           git push

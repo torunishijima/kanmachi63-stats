@@ -9,7 +9,6 @@ import html
 import csv
 from collections import defaultdict
 from datetime import datetime
-from pathlib import Path
 from urllib.parse import quote
 
 from scrape_kanmachi import (
@@ -61,17 +60,18 @@ def aggregate_by_year(entries: list[dict]) -> dict[int, dict]:
 
 # ─── キャッシュから全記事を読み込む ──────────────────────────────────────────
 
-def load_entries_from_cache() -> list[dict]:
-    import time
-    cache_dir = Path('.page_cache')
+def load_entries_from_cache(refresh_pages: int | None = None) -> list[dict]:
     all_entries = []
-    url = 'http://kanmachi63.blog.fc2.com/'
+    start_url = 'http://kanmachi63.blog.fc2.com/'
+    url = start_url
     visited = set()
+    page_num = 0
 
     while url and url not in visited:
         visited.add(url)
         try:
-            text = fetch_cached(url)
+            refresh = refresh_pages is None or page_num < refresh_pages
+            text = fetch_cached(url, refresh=refresh)
         except Exception as e:
             print(f'  スキップ: {url} ({e})')
             break
@@ -83,6 +83,7 @@ def load_entries_from_cache() -> list[dict]:
         np = NextPageParser()
         np.feed(text)
         url = np.next_url
+        page_num += 1
 
     print(f'合計 {len(all_entries)} 記事読み込み完了')
     return all_entries
@@ -97,24 +98,35 @@ def rank_color(rank: int) -> str:
     return ''
 
 _COMMON_CSS = """
-  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#111; color:#eee; }
-  h1 { margin:0; padding:.8em 1em .4em; color:#CC4400; font-size:1.3em; }
-  p.meta { margin:0 1em .8em; color:#888; font-size:.82em; }
+  :root {
+    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
+    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a;
+  }
+  * { box-sizing:border-box; }
+  body { font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:var(--bg); color:var(--text); }
+  h1 { margin:0; padding:1em 1rem .35em; color:#fff; font-size:1.35em; line-height:1.25; }
+  p.meta { margin:0 1rem 1em; color:var(--muted); font-size:.82em; }
   .name a, .hname a { color: inherit; text-decoration: none; }
-  .name a:hover, .hname a:hover { color: #CC4400; text-decoration: underline; }
+  .name a:hover, .hname a:hover { color: var(--accent); text-decoration: underline; }
   /* ナビゲーションバー */
   .sitenav {
-    display:flex; align-items:center; background:#222; height:40px;
-    overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch;
+    position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px;
+    overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line);
   }
   .sitenav a {
-    color:#fff; text-decoration:none;
-    padding:0 .9em; height:40px; line-height:40px;
+    color:#d8dde3; text-decoration:none;
+    padding:0 .95em; height:44px; line-height:44px;
     font-size:.82em; white-space:nowrap; display:inline-block;
   }
-  .sitenav a:hover { background:#333; color:#fff; }
-  .sitenav a.nav-active { background:#CC4400; color:#fff; font-weight:bold; }
-  .snav-home { color:#CC4400 !important; border-right:1px solid #444; }
+  .sitenav a:hover { background:#202630; color:#fff; }
+  .sitenav a.nav-active { background:var(--accent); color:#fff; font-weight:bold; }
+  .snav-home { color:#ffd9c5 !important; border-right:1px solid var(--line); }
+  @media (max-width:640px) {
+    .sitenav { height:42px; }
+    .sitenav a { height:42px; line-height:42px; padding:0 .8em; }
+    h1 { font-size:1.15em; padding:.9em .9rem .3em; }
+    p.meta { margin-left:.9rem; margin-right:.9rem; }
+  }
 """
 
 def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
@@ -165,36 +177,37 @@ def write_yearly_ranking(by_year: dict[int, dict], path: str, top_n: int = 0):
 <title>上町63 年別ランキング</title>
 <style>
 {_COMMON_CSS}
-  .tabs {{ padding:.5em 1em 0; border-bottom:2px solid #CC4400; overflow-x:auto; white-space:nowrap; }}
+  .tabs {{ padding:.45em 1rem 0; border-bottom:1px solid var(--line); overflow-x:auto; white-space:nowrap; background:#11151b; }}
   .tab-btn {{
-    border:none; background:#333; padding:.4em .7em; margin-right:3px;
-    border-radius:4px 4px 0 0; cursor:pointer; font-size:.85em; color:#aaa;
+    border:1px solid var(--line); border-bottom:none; background:var(--panel); padding:.5em .75em; margin-right:4px;
+    border-radius:8px 8px 0 0; cursor:pointer; font-size:.84em; color:#c8ced6;
   }}
-  .tab-btn.active {{ background:#CC4400; color:#fff; font-weight:bold; }}
-  .tab-pane {{ display:none; padding:.8em 1em; overflow-x:auto; }}
+  .tab-btn.active {{ background:var(--accent); border-color:var(--accent); color:#fff; font-weight:bold; }}
+  .tab-pane {{ display:none; padding:1em; overflow-x:auto; -webkit-overflow-scrolling:touch; }}
   .tab-pane.active {{ display:block; }}
-  .year-summary {{ margin-bottom:.8em; font-size:.88em; color:#aaa; }}
-  .year-summary span {{ margin-right:1.5em; }}
-  table {{ border-collapse:collapse; background:#222; box-shadow:0 1px 3px rgba(0,0,0,.4); width:100%; max-width:680px; }}
-  th {{ background:#111; color:#eee; padding:7px 10px; text-align:left; font-size:.82em; }}
-  td {{ padding:6px 10px; border-bottom:1px solid #333; font-size:.85em; }}
-  .rank {{ width:2.5em; text-align:center; font-weight:bold; color:#aaa; border-radius:3px; }}
-  .count {{ text-align:center; font-weight:bold; color:#CC4400; width:4.5em; }}
+  .year-summary {{ margin-bottom:.8em; font-size:.88em; color:var(--muted); display:flex; flex-wrap:wrap; gap:.5em 1.5em; }}
+  .year-summary span {{ margin-right:0; }}
+  table {{ border-collapse:collapse; background:var(--panel); border:1px solid var(--line); width:100%; max-width:720px; }}
+  th {{ background:#11151b; color:#d8dde3; padding:9px 12px; text-align:left; font-size:.8em; }}
+  td {{ padding:8px 12px; border-bottom:1px solid var(--line); font-size:.88em; }}
+  .rank {{ width:2.5em; text-align:center; font-weight:bold; color:#c8ced6; border-radius:3px; }}
+  .count {{ text-align:center; font-weight:bold; color:#ffb38d; width:4.5em; }}
   .inst {{ color:#fff; font-size:.8em; }}
   @media (max-width:480px) {{
     .inst {{ display:none; }}
+    .tab-pane {{ padding:.8em .9em; }}
   }}
 </style>
 </head>
 <body>
 <nav class="sitenav">
-  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
-  <a href="kanmachi63_history.html">📅 履歴</a>
-  <a href="kanmachi63_coplayers.html">👥 共演者</a>
-  <a href="kanmachi63_yearly.html" class="nav-active">📊 年別</a>
-  <a href="kanmachi63_heatmap.html">🌡️ ヒートマップ</a>
+  <a href="index.html" class="snav-home">kanmachi63</a>
+  <a href="kanmachi63_history.html">履歴</a>
+  <a href="kanmachi63_coplayers.html">共演者</a>
+  <a href="kanmachi63_yearly.html" class="nav-active">年別</a>
+  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
 </nav>
-<h1>📅 上町63 年別ランキング</h1>
+<h1>上町63 年別ランキング</h1>
 <p class="meta">集計日時: {now} ／ 対象期間: {min(years)}年〜{max(years)}年</p>
 <div class="tabs">{tab_buttons}</div>
 {tab_contents}
@@ -248,32 +261,32 @@ def write_heatmap(by_year: dict[int, dict], path: str):
 <title>上町63 出演日数ヒートマップ</title>
 <style>
 {_COMMON_CSS}
-  .wrap {{ overflow-x:auto; padding:0 1em 2em; -webkit-overflow-scrolling:touch; }}
-  table {{ border-collapse:collapse; background:#222; box-shadow:0 1px 3px rgba(0,0,0,.4); font-size:.82em; white-space:nowrap; }}
-  th {{ background:#111; color:#eee; padding:5px 10px; }}
-  thead th:first-child {{ position:sticky; left:0; z-index:2; background:#111; }}
-  td {{ padding:4px 8px; border:1px solid #333; text-align:center; }}
-  .hname {{ text-align:left !important; padding-left:12px !important; font-weight:bold; min-width:120px; white-space:nowrap; position:sticky; left:0; background:#222; z-index:1; box-shadow:2px 0 4px rgba(0,0,0,.4); }}
-  .heat-0 {{ color:#555; }}
+  .wrap {{ overflow-x:auto; padding:0 1rem 2em; -webkit-overflow-scrolling:touch; }}
+  table {{ border-collapse:collapse; background:var(--panel); border:1px solid var(--line); font-size:.82em; white-space:nowrap; }}
+  th {{ background:#11151b; color:#d8dde3; padding:7px 10px; }}
+  thead th:first-child {{ position:sticky; left:0; z-index:2; background:#11151b; }}
+  td {{ padding:6px 9px; border:1px solid var(--line); text-align:center; }}
+  .hname {{ text-align:left !important; padding-left:12px !important; font-weight:bold; min-width:128px; white-space:nowrap; position:sticky; left:0; background:var(--panel); z-index:1; box-shadow:2px 0 4px rgba(0,0,0,.35); }}
+  .heat-0 {{ color:#59616c; }}
   .heat-n {{
-    background: color-mix(in srgb, #CC4400 var(--pct), #222);
+    background: color-mix(in srgb, var(--accent) var(--pct), var(--panel));
     color: #eee; font-weight:bold;
   }}
   .heat-link {{ color:inherit; text-decoration:none; display:block; }}
   .heat-link:hover {{ text-decoration:underline; }}
-  .total-col {{ background:#000 !important; }}
-  .total-cell {{ font-weight:bold; color:#CC4400; background:#1a0d00; border-left:2px solid #CC4400; }}
+  .total-col {{ background:#0b0e13 !important; }}
+  .total-cell {{ font-weight:bold; color:#ffb38d; background:#1e130d; border-left:2px solid var(--accent); }}
 </style>
 </head>
 <body>
 <nav class="sitenav">
-  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
-  <a href="kanmachi63_history.html">📅 履歴</a>
-  <a href="kanmachi63_coplayers.html">👥 共演者</a>
-  <a href="kanmachi63_yearly.html">📊 年別</a>
-  <a href="kanmachi63_heatmap.html" class="nav-active">🌡️ ヒートマップ</a>
+  <a href="index.html" class="snav-home">kanmachi63</a>
+  <a href="kanmachi63_history.html">履歴</a>
+  <a href="kanmachi63_coplayers.html">共演者</a>
+  <a href="kanmachi63_yearly.html">年別</a>
+  <a href="kanmachi63_heatmap.html" class="nav-active">ヒートマップ</a>
 </nav>
-<h1>🌡️ 上町63 出演日数ヒートマップ</h1>
+<h1>上町63 出演日数ヒートマップ</h1>
 <p class="meta">集計日時: {now} ／ 総合TOP30 × 年別出演日数</p>
 <div class="wrap">
 <table>

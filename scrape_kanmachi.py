@@ -395,6 +395,11 @@ def extract_performers_from_body(body_html: str) -> list[tuple[str, str]]:
 
 CACHE_DIR = Path('.page_cache')
 
+def cache_path_for_url(url: str) -> Path:
+    """URLに対応するキャッシュファイルのパスを返す"""
+    safe = re.sub(r'[^\w]', '_', url) + '.html'
+    return CACHE_DIR / safe
+
 def fetch(url: str) -> str:
     """URLからHTMLを取得して文字列で返す"""
     req = urllib.request.Request(
@@ -411,23 +416,39 @@ def fetch(url: str) -> str:
     return raw.decode('utf-8', errors='replace')
 
 
-def fetch_cached(url: str) -> str:
-    """キャッシュがあればそれを使い、なければ取得してキャッシュする"""
+def fetch_cached_with_meta(url: str, refresh: bool = False) -> tuple[str, bool]:
+    """
+    URLのHTMLを返す。
+    refresh=True の場合はキャッシュがあっても再取得する。
+    戻り値: (HTML文字列, キャッシュヒットならTrue)
+    """
     CACHE_DIR.mkdir(exist_ok=True)
-    # URL をファイル名に変換
-    safe = re.sub(r'[^\w]', '_', url) + '.html'
-    cache_path = CACHE_DIR / safe
-    if cache_path.exists():
-        return cache_path.read_text(encoding='utf-8')
-    text = fetch(url)
+    cache_path = cache_path_for_url(url)
+    if cache_path.exists() and not refresh:
+        return cache_path.read_text(encoding='utf-8'), True
+    try:
+        text = fetch(url)
+    except Exception:
+        if cache_path.exists():
+            return cache_path.read_text(encoding='utf-8'), True
+        raise
     cache_path.write_text(text, encoding='utf-8')
+    return text, False
+
+
+def fetch_cached(url: str, refresh: bool = False) -> str:
+    """URLのHTML文字列を返す"""
+    text, _ = fetch_cached_with_meta(url, refresh=refresh)
     return text
 
 
 # ─── メイン処理 ───────────────────────────────────────────────────────────────
 
-def scrape_all_pages(start_url: str) -> list[dict]:
-    """全ページを巡回して記事一覧を返す"""
+def scrape_all_pages(start_url: str, refresh_pages: int | None = None) -> list[dict]:
+    """
+    全ページを巡回して記事一覧を返す。
+    refresh_pages=None の場合は全ページを再取得し、ページ番号ずれによる欠落を防ぐ。
+    """
     all_entries = []
     url = start_url
     page_num = 0
@@ -435,9 +456,11 @@ def scrape_all_pages(start_url: str) -> list[dict]:
     while url:
         print(f'  取得中: {url}')
         html_text = None
+        cache_hit = False
         for attempt in range(3):
             try:
-                html_text = fetch_cached(url)
+                refresh = refresh_pages is None or page_num < refresh_pages
+                html_text, cache_hit = fetch_cached_with_meta(url, refresh=refresh)
                 break
             except Exception as e:
                 print(f'  エラー (試行 {attempt+1}/3): {e}')
@@ -464,7 +487,6 @@ def scrape_all_pages(start_url: str) -> list[dict]:
 
         page_num += 1
         # キャッシュから読んだ場合はスリープしない
-        cache_hit = (CACHE_DIR / (re.sub(r'[^\w]', '_', url) + '.html')).exists()
         if next_url and not cache_hit:
             time.sleep(1)
         url = next_url
@@ -581,40 +603,52 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>上町63 出演者統計</title>
 <style>
-  body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 0; background: #fafafa; color: #222; }}
-  .page-content {{ padding: 2em; }}
-  h1 {{ color: #333; border-bottom: 2px solid #c8a84b; padding-bottom: .3em; margin-bottom: .5em; }}
-  p.meta {{ color: #888; font-size: .85em; margin: 0 0 1em; }}
-  table {{ border-collapse: collapse; width: 100%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1); }}
-  th {{ background: #2c3e50; color: #fff; padding: 10px 14px; text-align: left; }}
-  td {{ padding: 8px 14px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }}
-  tr:hover td {{ background: #f0f4f8; }}
-  .rank {{ color: #888; font-size: .9em; width: 3em; text-align: center; }}
-  .count {{ font-weight: bold; color: #c0392b; font-size: 1.1em; text-align: center; width: 5em; }}
-  .inst {{ color: #2980b9; font-size: .85em; }}
-  .articles {{ font-size: .78em; color: #555; max-width: 300px; }}
-  .article {{ display: inline-block; background: #eef2f7; border-radius: 3px; padding: 1px 5px; margin: 1px; }}
-  .name a {{ color: #2c3e50; text-decoration: none; }}
-  .name a:hover {{ color: #1abc9c; text-decoration: underline; }}
-  .sitenav {{ display:flex; align-items:center; background:#2c3e50; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }}
-  .sitenav a {{ color:#bdc3c7; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }}
-  .sitenav a:hover {{ background:#34495e; color:#ecf0f1; }}
-  .sitenav a.nav-active {{ background:#1abc9c; color:#fff; font-weight:bold; }}
-  .snav-home {{ color:#c8a84b !important; border-right:1px solid #3d5166; }}
+  :root {{
+    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
+    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a;
+  }}
+  * {{ box-sizing:border-box; }}
+  body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 0; background: var(--bg); color: var(--text); }}
+  .page-content {{ padding: 1.2em 1em 2em; overflow-x:auto; -webkit-overflow-scrolling:touch; }}
+  h1 {{ color: #fff; padding-bottom: .3em; margin: 0 0 .35em; font-size:1.35em; }}
+  p.meta {{ color: var(--muted); font-size: .82em; margin: 0 0 1em; }}
+  table {{ border-collapse: collapse; min-width: 760px; width: 100%; background: var(--panel); border:1px solid var(--line); }}
+  th {{ background: #11151b; color: #d8dde3; padding: 9px 12px; text-align: left; font-size:.8em; }}
+  td {{ padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size:.88em; }}
+  tr:hover td {{ background: #202630; }}
+  .rank {{ color: var(--muted); font-size: .9em; width: 3em; text-align: center; }}
+  .count {{ font-weight: bold; color: #ffb38d; font-size: 1.05em; text-align: center; width: 5em; }}
+  .inst {{ color: #c8ced6; font-size: .82em; }}
+  .articles {{ font-size: .76em; color: var(--muted); max-width: 340px; }}
+  .article {{ display: inline-block; background: var(--panel-2); border:1px solid var(--line); border-radius: 999px; padding: 1px 7px; margin: 1px; }}
+  .name a {{ color: #fff; text-decoration: none; }}
+  .name a:hover {{ color: var(--accent); text-decoration: underline; }}
+  .sitenav {{ position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line); }}
+  .sitenav a {{ color:#d8dde3; text-decoration:none; padding:0 .95em; height:44px; line-height:44px; font-size:.82em; white-space:nowrap; display:inline-block; }}
+  .sitenav a:hover {{ background:#202630; color:#fff; }}
+  .sitenav a.nav-active {{ background:var(--accent); color:#fff; font-weight:bold; }}
+  .snav-home {{ color:#ffd9c5 !important; border-right:1px solid var(--line); }}
+  @media (max-width:640px) {{
+    .sitenav {{ height:42px; }}
+    .sitenav a {{ height:42px; line-height:42px; padding:0 .8em; }}
+    .page-content {{ padding:.95em .9em 1.4em; }}
+    h1 {{ font-size:1.15em; }}
+  }}
 </style>
 </head>
 <body>
 <nav class="sitenav">
-  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
-  <a href="kanmachi63_history.html">📅 履歴</a>
-  <a href="kanmachi63_coplayers.html">👥 共演者</a>
-  <a href="kanmachi63_yearly.html">📊 年別</a>
-  <a href="kanmachi63_heatmap.html">🌡️ ヒートマップ</a>
+  <a href="index.html" class="snav-home">kanmachi63</a>
+  <a href="kanmachi63_history.html">履歴</a>
+  <a href="kanmachi63_coplayers.html">共演者</a>
+  <a href="kanmachi63_yearly.html">年別</a>
+  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
 </nav>
 <div class="page-content">
-<h1>🎵 上町63 出演者統計</h1>
+<h1>上町63 出演者統計</h1>
 <p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>
 <table>
 <thead>
@@ -646,7 +680,7 @@ def update_index_html(stats: dict, period_start: str, period_end: str, period_co
     import re as _re
     with open(path, encoding='utf-8') as f:
         content = f.read()
-    new_span = f'<span class="period">📅 {period_start} 〜 {period_end} ／ {period_count}ヶ月 ／ {len(stats)}名</span>'
+    new_span = f'<span class="period">{period_start} 〜 {period_end} ／ {period_count}ヶ月 ／ {len(stats)}名</span>'
     content = _re.sub(r'<span class="period">.*?</span>', new_span, content)
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)

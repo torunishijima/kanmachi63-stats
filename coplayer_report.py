@@ -20,14 +20,17 @@ from scrape_kanmachi import (
 YEAR_RE = re.compile(r'(20\d{2})')
 
 
-def load_entries():
+def load_entries(refresh_pages: int | None = None):
     entries = []
-    url = 'http://kanmachi63.blog.fc2.com/'
+    start_url = 'http://kanmachi63.blog.fc2.com/'
+    url = start_url
     visited = set()
+    page_num = 0
     while url and url not in visited:
         visited.add(url)
         try:
-            text = fetch_cached(url)
+            refresh = refresh_pages is None or page_num < refresh_pages
+            text = fetch_cached(url, refresh=refresh)
         except Exception as e:
             print(f'  スキップ: {e}')
             break
@@ -37,6 +40,7 @@ def load_entries():
         np = NextPageParser()
         np.feed(text)
         url = np.next_url
+        page_num += 1
     print(f'{len(entries)} 記事読み込み完了')
     return entries
 
@@ -123,100 +127,108 @@ def write_html(total, co, instruments, path):
 <title>上町63 共演者ランキング</title>
 <style>
   * {{ box-sizing: border-box; }}
-  body {{ font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:#111; color:#eee; }}
+  :root {{
+    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
+    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a; --accent-soft:rgba(255,106,42,.13);
+  }}
+  body {{ font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:var(--bg); color:var(--text); }}
 
   /* ナビゲーションバー */
-  .sitenav {{ display:flex; align-items:center; background:#222; height:40px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; }}
-  .sitenav a {{ color:#fff; text-decoration:none; padding:0 .9em; height:40px; line-height:40px; font-size:.82em; white-space:nowrap; display:inline-block; }}
-  .sitenav a:hover {{ background:#333; color:#fff; }}
-  .sitenav a.nav-active {{ background:#CC4400; color:#fff; font-weight:bold; }}
-  .snav-home {{ color:#CC4400 !important; border-right:1px solid #444; }}
+  .sitenav {{ position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line); }}
+  .sitenav a {{ color:#d8dde3; text-decoration:none; padding:0 .95em; height:44px; line-height:44px; font-size:.82em; white-space:nowrap; display:inline-block; }}
+  .sitenav a:hover {{ background:#202630; color:#fff; }}
+  .sitenav a.nav-active {{ background:var(--accent); color:#fff; font-weight:bold; }}
+  .snav-home {{ color:#ffd9c5 !important; border-right:1px solid var(--line); }}
 
   /* レイアウト */
-  .container {{ display:flex; height:calc(100vh - 40px); }}
+  .container {{ display:flex; height:calc(100vh - 44px); }}
   .left-panel {{
-    width:300px; min-width:200px; background:#222; color:#eee;
-    display:flex; flex-direction:column; flex-shrink:0;
+    width:320px; min-width:220px; background:var(--panel); color:var(--text);
+    display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
   }}
-  .right-panel {{ flex:1; padding:1.5em; overflow-y:auto; }}
+  .right-panel {{ flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }}
 
   /* 左パネル */
-  .panel-title {{ padding:.8em 1em .4em; font-size:.85em; color:#888; letter-spacing:.05em; }}
+  .panel-title {{ padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }}
   .search-box {{
-    margin:.3em .8em .6em; padding:.5em .8em;
-    border:none; border-radius:6px; width:calc(100% - 1.6em);
-    font-size:.9em; background:#333; color:#eee;
+    margin:.3em .8em .65em; padding:.7em .85em;
+    border:1px solid var(--line); border-radius:8px; width:calc(100% - 1.6em);
+    font-size:.95em; background:#10141a; color:var(--text);
     outline:none;
   }}
-  .search-box::placeholder {{ color:#666; }}
+  .search-box:focus {{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }}
+  .search-box::placeholder {{ color:#6f7782; }}
   .list-wrap {{ flex:1; overflow:hidden; position:relative; }}
   .list-wrap::after {{
     content:''; pointer-events:none;
     position:absolute; bottom:0; left:0; right:0; height:3em;
-    background:linear-gradient(transparent, #222);
+    background:linear-gradient(transparent, var(--panel));
   }}
   .player-list {{ height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }}
   .player-item {{
-    padding:.55em 1em; cursor:pointer; font-size:.88em;
+    min-height:42px; padding:.65em 1em; cursor:pointer; font-size:.9em;
     border-left:3px solid transparent;
     display:flex; justify-content:space-between; align-items:center;
   }}
-  .player-item:hover {{ background:#333; }}
-  .player-item.active {{ background:#CC4400; border-left-color:#fff; color:#fff; }}
+  .player-item:hover {{ background:#202630; }}
+  .player-item.active {{ background:var(--accent); border-left-color:#fff; color:#fff; }}
   .player-item .pname {{ flex:1; }}
-  .player-item .ptotal {{ font-size:.8em; color:#888; margin-left:.5em; }}
+  .player-item .ptotal {{ font-size:.78em; color:var(--muted); margin-left:.5em; }}
   .player-item.active .ptotal {{ color:#ffe; }}
 
   /* 右パネル */
   .placeholder {{
     display:flex; align-items:center; justify-content:center;
-    height:60%; color:#666; font-size:1.1em;
+    height:60%; color:#69717c; font-size:1em;
   }}
   .detail-header {{ margin-bottom:1.2em; }}
-  .detail-name {{ font-size:1.6em; font-weight:bold; color:#CC4400; }}
-  .detail-meta {{ color:#888; font-size:.88em; margin-top:.3em; }}
-  .detail-meta span {{ margin-right:1.5em; }}
+  .detail-name {{ font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }}
+  .detail-meta {{ color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }}
+  .detail-meta span {{ margin-right:0; }}
   .detail-meta .inst {{ color:#fff; }}
-  .detail-meta .days {{ color:#CC4400; font-weight:bold; }}
+  .detail-meta .days {{ color:#ffb38d; font-weight:bold; }}
 
-  h3 {{ font-size:1em; color:#888; margin:1.2em 0 .5em; border-bottom:1px solid #333; padding-bottom:.3em; }}
+  h3 {{ font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }}
 
   /* 共演者テーブル */
-  .co-table {{ border-collapse:collapse; width:100%; max-width:560px; background:#222;
-               box-shadow:0 1px 4px rgba(0,0,0,.4); border-radius:6px; overflow:hidden; }}
-  .co-table th {{ background:#111; color:#eee; padding:7px 14px; text-align:left; font-size:.82em; }}
-  .co-table td {{ padding:7px 14px; border-bottom:1px solid #333; font-size:.88em; }}
+  .co-table {{ border-collapse:collapse; width:100%; max-width:620px; background:var(--panel);
+               border:1px solid var(--line); border-radius:8px; overflow:hidden; }}
+  .co-table th {{ background:#11151b; color:#d8dde3; padding:9px 14px; text-align:left; font-size:.78em; }}
+  .co-table td {{ padding:9px 14px; border-bottom:1px solid var(--line); font-size:.9em; }}
   .co-table tr:last-child td {{ border-bottom:none; }}
-  .co-table tr:hover td {{ background:#2a2a2a; }}
-  .co-rank {{ width:3em; text-align:center; color:#666; font-size:.85em; }}
+  .co-table tr:hover td {{ background:#202630; }}
+  .co-rank {{ width:3em; text-align:center; color:#79818c; font-size:.85em; }}
   .co-name {{ cursor:pointer; color:#fff; white-space:nowrap; }}
   .co-name:hover {{ text-decoration:underline; }}
-  .co-days {{ text-align:center; font-weight:bold; color:#CC4400; width:5em; }}
-  .co-inst {{ color:#888; font-size:.82em; }}
+  .co-days {{ text-align:center; font-weight:bold; color:#ffb38d; width:5em; }}
+  .co-inst {{ color:var(--muted); font-size:.82em; }}
   .co-pct {{ width:80px; }}
-  .bar-bg {{ background:#333; border-radius:3px; height:8px; }}
-  .bar-fill {{ background:#CC4400; border-radius:3px; height:8px; }}
+  .bar-bg {{ background:#2f3540; border-radius:3px; height:8px; }}
+  .bar-fill {{ background:var(--accent); border-radius:3px; height:8px; }}
 
-  .meta {{ color:#666; font-size:.8em; padding:.5em 1em; border-top:1px solid #444; }}
+  .meta {{ color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }}
 
   /* スマホ対応 */
   @media (max-width: 640px) {{
-    .container {{ flex-direction:column; height:auto; min-height:calc(100vh - 40px); }}
-    .left-panel {{ width:100%; height:40vh; min-width:unset; flex-shrink:0; }}
-    .right-panel {{ flex:1; padding:1em; }}
+    .sitenav {{ height:42px; }}
+    .sitenav a {{ height:42px; line-height:42px; padding:0 .8em; }}
+    .container {{ flex-direction:column; height:auto; min-height:calc(100vh - 42px); }}
+    .left-panel {{ width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }}
+    .right-panel {{ flex:1; padding:1em .9em 1.5em; }}
     .detail-name {{ font-size:1.3em; }}
     .co-inst {{ display:none; }}
     .co-pct {{ display:none; }}
+    .co-table th, .co-table td {{ padding:9px 10px; }}
   }}
 </style>
 </head>
 <body>
 <nav class="sitenav">
-  <a href="index.html" class="snav-home">🎵 kanmachi63</a>
-  <a href="kanmachi63_history.html">📅 履歴</a>
-  <a href="kanmachi63_coplayers.html" class="nav-active">👥 共演者</a>
-  <a href="kanmachi63_yearly.html">📊 年別</a>
-  <a href="kanmachi63_heatmap.html">🌡️ ヒートマップ</a>
+  <a href="index.html" class="snav-home">kanmachi63</a>
+  <a href="kanmachi63_history.html">履歴</a>
+  <a href="kanmachi63_coplayers.html" class="nav-active">共演者</a>
+  <a href="kanmachi63_yearly.html">年別</a>
+  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
 </nav>
 <div class="container">
 
@@ -225,12 +237,12 @@ def write_html(total, co, instruments, path):
     <div class="panel-title">出演者 ({total_players}名)</div>
     <input class="search-box" type="text" id="search" placeholder="名前で絞り込み…" oninput="filterList()">
     <div class="list-wrap"><div class="player-list" id="playerList"></div></div>
-    <div class="meta">集計: {now}<br>対象: 2012年8月〜2026年4月</div>
+    <div class="meta">集計: {now}</div>
   </div>
 
   <!-- 右：共演者詳細 -->
   <div class="right-panel" id="rightPanel">
-    <div class="placeholder">← 出演者を選んでください</div>
+    <div class="placeholder">出演者を選んでください</div>
   </div>
 
 </div>
@@ -288,13 +300,13 @@ function showPlayer(name) {{
     <div class="detail-header">
       <div class="detail-name">${{p.name}}</div>
       <div class="detail-meta">
-        <span class="inst">🎵 ${{p.inst || '不明'}}</span>
-        <span class="days">📅 総出演: ${{p.total}} 日</span>
-        <span>👥 共演者: ${{p.co.length}} 名</span>
+        <span class="inst">${{p.inst || '不明'}}</span>
+        <span class="days">総出演: ${{p.total}} 日</span>
+        <span>共演者: ${{p.co.length}} 名</span>
       </div>
     </div>
     <div style="margin:.6em 0 1.2em;font-size:.85em;">
-      <a href="${{historyUrl}}" style="color:#2980b9;text-decoration:none;">📅 出演履歴を見る</a>
+      <a href="${{historyUrl}}" style="color:#ffd9c5;text-decoration:none;">出演履歴を見る</a>
     </div>
     <h3>共演者ランキング</h3>
     <table class="co-table">
