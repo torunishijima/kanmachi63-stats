@@ -10,6 +10,7 @@ import time
 import html
 import urllib.request
 import urllib.parse
+import urllib.error
 from pathlib import Path
 from collections import defaultdict
 from html.parser import HTMLParser
@@ -395,6 +396,13 @@ def extract_performers_from_body(body_html: str) -> list[tuple[str, str]]:
 
 CACHE_DIR = Path('.page_cache')
 
+# 先頭から何ページを再取得するか。古い記事は内容が変わらないため全ページ取得は不要。
+# 全ページ再取得はリクエストが集中して 403 を招くので既定にしない。
+DEFAULT_REFRESH_PAGES = 3
+
+# 一時的な遮断とみなして再試行する HTTP ステータス
+RETRYABLE_STATUS = {403, 429, 500, 502, 503, 504}
+
 def cache_path_for_url(url: str) -> Path:
     """URLに対応するキャッシュファイルのパスを返す"""
     safe = re.sub(r'[^\w]', '_', url) + '.html'
@@ -416,10 +424,43 @@ def fetch(url: str) -> str:
     return raw.decode('utf-8', errors='replace')
 
 
+def fetch_with_retry(url: str, attempts: int = 4, base_delay: float = 3.0) -> str:
+    """
+    指数バックオフ付きでURLを取得する。
+    403/429/5xx は一時的な遮断とみなして待機後に再試行し、
+    404 などの恒久的なエラーは即座に送出する。
+    """
+    delay = base_delay
+    for attempt in range(1, attempts + 1):
+        try:
+            return fetch(url)
+        except urllib.error.HTTPError as e:
+            if e.code not in RETRYABLE_STATUS or attempt == attempts:
+                raise
+            wait = delay
+            retry_after = e.headers.get('Retry-After') if e.headers else None
+            if retry_after:
+                try:
+                    wait = max(wait, float(retry_after))
+                except ValueError:
+                    pass
+            print(f'    HTTP {e.code} — {wait:.0f}秒待機して再試行 ({attempt}/{attempts})')
+            time.sleep(wait)
+            delay *= 2.5
+        except urllib.error.URLError as e:
+            if attempt == attempts:
+                raise
+            print(f'    通信エラー ({e.reason}) — {delay:.0f}秒待機して再試行 ({attempt}/{attempts})')
+            time.sleep(delay)
+            delay *= 2.5
+    raise RuntimeError(f'取得に失敗しました: {url}')
+
+
 def fetch_cached_with_meta(url: str, refresh: bool = False) -> tuple[str, bool]:
     """
     URLのHTMLを返す。
     refresh=True の場合はキャッシュがあっても再取得する。
+    再取得に失敗してもキャッシュがあればそれを使う（警告を出す）。
     戻り値: (HTML文字列, キャッシュヒットならTrue)
     """
     CACHE_DIR.mkdir(exist_ok=True)
@@ -427,9 +468,10 @@ def fetch_cached_with_meta(url: str, refresh: bool = False) -> tuple[str, bool]:
     if cache_path.exists() and not refresh:
         return cache_path.read_text(encoding='utf-8'), True
     try:
-        text = fetch(url)
-    except Exception:
+        text = fetch_with_retry(url)
+    except Exception as e:
         if cache_path.exists():
+            print(f'    警告: 再取得に失敗したためキャッシュを使用します ({e})')
             return cache_path.read_text(encoding='utf-8'), True
         raise
     cache_path.write_text(text, encoding='utf-8')
@@ -444,10 +486,12 @@ def fetch_cached(url: str, refresh: bool = False) -> str:
 
 # ─── メイン処理 ───────────────────────────────────────────────────────────────
 
-def scrape_all_pages(start_url: str, refresh_pages: int | None = None) -> list[dict]:
+def scrape_all_pages(start_url: str, refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[dict]:
     """
     全ページを巡回して記事一覧を返す。
-    refresh_pages=None の場合は全ページを再取得し、ページ番号ずれによる欠落を防ぐ。
+    refresh_pages は先頭から再取得するページ数。None を渡すと全ページを再取得する。
+    取得に失敗した場合はページを読み飛ばさず例外を送出する
+    （黙って欠落したデータで集計が進むのを防ぐため）。
     """
     all_entries = []
     url = start_url
@@ -455,26 +499,8 @@ def scrape_all_pages(start_url: str, refresh_pages: int | None = None) -> list[d
 
     while url:
         print(f'  取得中: {url}')
-        html_text = None
-        cache_hit = False
-        for attempt in range(3):
-            try:
-                refresh = refresh_pages is None or page_num < refresh_pages
-                html_text, cache_hit = fetch_cached_with_meta(url, refresh=refresh)
-                break
-            except Exception as e:
-                print(f'  エラー (試行 {attempt+1}/3): {e}')
-                if attempt < 2:
-                    time.sleep(3)
-        if html_text is None:
-            print('  スキップして次ページを推定します...')
-            m = re.search(r'page-(\d+)\.html', url)
-            if m:
-                url = re.sub(r'page-\d+\.html', f'page-{int(m.group(1))+1}.html', url)
-            else:
-                break
-            page_num += 1
-            continue
+        refresh = refresh_pages is None or page_num < refresh_pages
+        html_text, cache_hit = fetch_cached_with_meta(url, refresh=refresh)
 
         parser = BlogParser()
         parser.feed(html_text)
@@ -697,6 +723,8 @@ if __name__ == '__main__':
     print('=== kanmachi63 出演者集計スクリプト ===\n')
     print('1. 全ページ取得中...')
     entries = scrape_all_pages(BASE_URL)
+    if not entries:
+        raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
 
     print('\n2. スケジュール記事から出演者を集計中...')
     stats = aggregate(entries)

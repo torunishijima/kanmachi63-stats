@@ -14,6 +14,7 @@ from urllib.parse import quote
 from scrape_kanmachi import (
     BlogParser, NextPageParser, SCHEDULE_TITLE_RE,
     extract_performers_by_date, normalize_name, fetch_cached,
+    DEFAULT_REFRESH_PAGES,
 )
 
 # ─── 年付きタイトルから年を抽出 ───────────────────────────────────────────────
@@ -60,7 +61,8 @@ def aggregate_by_year(entries: list[dict]) -> dict[int, dict]:
 
 # ─── キャッシュから全記事を読み込む ──────────────────────────────────────────
 
-def load_entries_from_cache(refresh_pages: int | None = None) -> list[dict]:
+def load_entries_from_cache(refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[dict]:
+    """記事一覧を読み込む。取得に失敗した場合は例外を送出する。"""
     all_entries = []
     start_url = 'http://kanmachi63.blog.fc2.com/'
     url = start_url
@@ -69,12 +71,8 @@ def load_entries_from_cache(refresh_pages: int | None = None) -> list[dict]:
 
     while url and url not in visited:
         visited.add(url)
-        try:
-            refresh = refresh_pages is None or page_num < refresh_pages
-            text = fetch_cached(url, refresh=refresh)
-        except Exception as e:
-            print(f'  スキップ: {url} ({e})')
-            break
+        refresh = refresh_pages is None or page_num < refresh_pages
+        text = fetch_cached(url, refresh=refresh)
 
         p = BlogParser()
         p.feed(text)
@@ -330,9 +328,13 @@ if __name__ == '__main__':
     print('=== kanmachi63 年別トレンド分析 ===\n')
     print('記事読み込み中...')
     entries = load_entries_from_cache()
+    if not entries:
+        raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
 
     print('年別集計中...')
     by_year = aggregate_by_year(entries)
+    if not by_year:
+        raise SystemExit('エラー: 年別データが空です。処理を中止します。')
     for y, yd in by_year.items():
         print(f'  {y}年: {len(yd)}名')
 

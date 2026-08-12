@@ -14,7 +14,7 @@ from urllib.parse import quote
 from scrape_kanmachi import (
     BlogParser, NextPageParser, SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
-    normalize_name, fetch_cached,
+    normalize_name, fetch_cached, DEFAULT_REFRESH_PAGES,
 )
 
 DATE_DAY_RE = re.compile(r'(\d+)月(\d+)日')
@@ -23,7 +23,8 @@ TITLE_YEAR_RE = re.compile(r'(20\d{2})')
 TITLE_MONTH_RE = re.compile(r'(\d+)月のスケジュール')
 
 
-def load_entries(refresh_pages: int | None = None):
+def load_entries(refresh_pages: int | None = DEFAULT_REFRESH_PAGES):
+    """記事一覧を読み込む。取得に失敗した場合は例外を送出する。"""
     entries = []
     start_url = 'http://kanmachi63.blog.fc2.com/'
     url = start_url
@@ -31,12 +32,8 @@ def load_entries(refresh_pages: int | None = None):
     page_num = 0
     while url and url not in visited:
         visited.add(url)
-        try:
-            refresh = refresh_pages is None or page_num < refresh_pages
-            text = fetch_cached(url, refresh=refresh)
-        except Exception as e:
-            print(f'  スキップ: {e}')
-            break
+        refresh = refresh_pages is None or page_num < refresh_pages
+        text = fetch_cached(url, refresh=refresh)
         p = BlogParser()
         p.feed(text)
         entries.extend(p.entries)
@@ -400,6 +397,8 @@ if (initName && byName[initName]) showPlayer(initName, initYear);
 if __name__ == '__main__':
     print('=== kanmachi63 出演履歴生成 ===\n')
     entries = load_entries()
+    if not entries:
+        raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
     print('履歴データ集計中...')
     history, instruments, total = build_history_data(entries)
     print(f'出演者: {len(total)}名')
