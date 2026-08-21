@@ -11,6 +11,7 @@ from collections import defaultdict
 from datetime import datetime
 from itertools import combinations
 
+from html_common import page_head, page_tail
 from scrape_kanmachi import (
     SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
@@ -94,118 +95,89 @@ def write_html(total, co, instruments, path):
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
     total_players = len(sorted_names)
 
-    html_content = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>上町63 共演者ランキング</title>
-<style>
-  * {{ box-sizing: border-box; }}
-  :root {{
-    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
-    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a; --accent-soft:rgba(255,106,42,.13);
-  }}
-  body {{ font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:var(--bg); color:var(--text); }}
-
-  /* ナビゲーションバー */
-  .sitenav {{ position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line); }}
-  .sitenav a {{ color:#d8dde3; text-decoration:none; padding:0 .95em; height:44px; line-height:44px; font-size:.82em; white-space:nowrap; display:inline-block; }}
-  .sitenav a:hover {{ background:#202630; color:#fff; }}
-  .sitenav a.nav-active {{ background:var(--accent); color:#fff; font-weight:bold; }}
-  .snav-home {{ color:#ffd9c5 !important; border-right:1px solid var(--line); }}
-
+    css_extra = """
   /* レイアウト */
-  .container {{ display:flex; height:calc(100vh - 44px); }}
-  .left-panel {{
+  .container { display:flex; height:calc(100vh - 44px); }
+  .left-panel {
     width:320px; min-width:220px; background:var(--panel); color:var(--text);
     display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
-  }}
-  .right-panel {{ flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }}
+  }
+  .right-panel { flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }
 
   /* 左パネル */
-  .panel-title {{ padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }}
-  .search-box {{
+  .panel-title { padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }
+  .search-box {
     margin:.3em .8em .65em; padding:.7em .85em;
     border:1px solid var(--line); border-radius:8px; width:calc(100% - 1.6em);
     font-size:.95em; background:#10141a; color:var(--text);
     outline:none;
-  }}
-  .search-box:focus {{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }}
-  .search-box::placeholder {{ color:#6f7782; }}
-  .list-wrap {{ flex:1; overflow:hidden; position:relative; }}
-  .list-wrap::after {{
+  }
+  .search-box:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .search-box::placeholder { color:#6f7782; }
+  .list-wrap { flex:1; overflow:hidden; position:relative; }
+  .list-wrap::after {
     content:''; pointer-events:none;
     position:absolute; bottom:0; left:0; right:0; height:3em;
     background:linear-gradient(transparent, var(--panel));
-  }}
-  .player-list {{ height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }}
-  .player-item {{
+  }
+  .player-list { height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .player-item {
     min-height:42px; padding:.65em 1em; cursor:pointer; font-size:.9em;
     border-left:3px solid transparent;
     display:flex; justify-content:space-between; align-items:center;
-  }}
-  .player-item:hover {{ background:#202630; }}
-  .player-item.active {{ background:var(--accent); border-left-color:#fff; color:#fff; }}
-  .player-item .pname {{ flex:1; }}
-  .player-item .ptotal {{ font-size:.78em; color:var(--muted); margin-left:.5em; }}
-  .player-item.active .ptotal {{ color:#ffe; }}
+  }
+  .player-item:hover { background:#202630; }
+  .player-item.active { background:var(--accent); border-left-color:#fff; color:#fff; }
+  .player-item .pname { flex:1; }
+  .player-item .ptotal { font-size:.78em; color:var(--muted); margin-left:.5em; }
+  .player-item.active .ptotal { color:#ffe; }
 
   /* 右パネル */
-  .placeholder {{
+  .placeholder {
     display:flex; align-items:center; justify-content:center;
     height:60%; color:#69717c; font-size:1em;
-  }}
-  .detail-header {{ margin-bottom:1.2em; }}
-  .detail-name {{ font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }}
-  .detail-meta {{ color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }}
-  .detail-meta span {{ margin-right:0; }}
-  .detail-meta .inst {{ color:#fff; }}
-  .detail-meta .days {{ color:#ffb38d; font-weight:bold; }}
+  }
+  .detail-header { margin-bottom:1.2em; }
+  .detail-name { font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }
+  .detail-meta { color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }
+  .detail-meta span { margin-right:0; }
+  .detail-meta .inst { color:#fff; }
+  .detail-meta .days { color:#ffb38d; font-weight:bold; }
 
-  h3 {{ font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }}
+  h3 { font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }
 
   /* 共演者テーブル */
-  .co-table {{ border-collapse:collapse; width:100%; max-width:620px; background:var(--panel);
-               border:1px solid var(--line); border-radius:8px; overflow:hidden; }}
-  .co-table th {{ background:#11151b; color:#d8dde3; padding:9px 14px; text-align:left; font-size:.78em; }}
-  .co-table td {{ padding:9px 14px; border-bottom:1px solid var(--line); font-size:.9em; }}
-  .co-table tr:last-child td {{ border-bottom:none; }}
-  .co-table tr:hover td {{ background:#202630; }}
-  .co-rank {{ width:3em; text-align:center; color:#79818c; font-size:.85em; }}
-  .co-name {{ cursor:pointer; color:#fff; white-space:nowrap; }}
-  .co-name:hover {{ text-decoration:underline; }}
-  .co-days {{ text-align:center; font-weight:bold; color:#ffb38d; width:5em; }}
-  .co-inst {{ color:var(--muted); font-size:.82em; }}
-  .co-pct {{ width:80px; }}
-  .bar-bg {{ background:#2f3540; border-radius:3px; height:8px; }}
-  .bar-fill {{ background:var(--accent); border-radius:3px; height:8px; }}
+  .co-table { border-collapse:collapse; width:100%; max-width:620px; background:var(--panel);
+               border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .co-table th { background:#11151b; color:#d8dde3; padding:9px 14px; text-align:left; font-size:.78em; }
+  .co-table td { padding:9px 14px; border-bottom:1px solid var(--line); font-size:.9em; }
+  .co-table tr:last-child td { border-bottom:none; }
+  .co-table tr:hover td { background:#202630; }
+  .co-rank { width:3em; text-align:center; color:#79818c; font-size:.85em; }
+  .co-name { cursor:pointer; color:#fff; white-space:nowrap; }
+  .co-name:hover { text-decoration:underline; }
+  .co-days { text-align:center; font-weight:bold; color:#ffb38d; width:5em; }
+  .co-inst { color:var(--muted); font-size:.82em; }
+  .co-pct { width:80px; }
+  .bar-bg { background:#2f3540; border-radius:3px; height:8px; }
+  .bar-fill { background:var(--accent); border-radius:3px; height:8px; }
 
-  .meta {{ color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }}
+  .meta { color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }
 
   /* スマホ対応 */
-  @media (max-width: 640px) {{
-    .sitenav {{ height:42px; }}
-    .sitenav a {{ height:42px; line-height:42px; padding:0 .8em; }}
-    .container {{ flex-direction:column; height:auto; min-height:calc(100vh - 42px); }}
-    .left-panel {{ width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }}
-    .right-panel {{ flex:1; padding:1em .9em 1.5em; }}
-    .detail-name {{ font-size:1.3em; }}
-    .co-inst {{ display:none; }}
-    .co-pct {{ display:none; }}
-    .co-table th, .co-table td {{ padding:9px 10px; }}
-  }}
-</style>
-</head>
-<body>
-<nav class="sitenav">
-  <a href="index.html" class="snav-home">kanmachi63</a>
-  <a href="kanmachi63_history.html">履歴</a>
-  <a href="kanmachi63_coplayers.html" class="nav-active">共演者</a>
-  <a href="kanmachi63_yearly.html">年別</a>
-  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
-</nav>
-<div class="container">
+  @media (max-width: 640px) {
+    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
+    .left-panel { width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }
+    .right-panel { flex:1; padding:1em .9em 1.5em; }
+    .detail-name { font-size:1.3em; }
+    .co-inst { display:none; }
+    .co-pct { display:none; }
+    .co-table th, .co-table td { padding:9px 10px; }
+  }
+"""
+    html_content = (
+        page_head('上町63 共演者ランキング', css_extra, active='coplayers')
+        + f'''<div class="container">
 
   <!-- 左：出演者リスト -->
   <div class="left-panel">
@@ -298,9 +270,9 @@ renderList();
 const hash = decodeURIComponent(location.hash.slice(1));
 if (hash && byName[hash]) showPlayer(hash);
 </script>
-</body>
-</html>
-"""
+'''
+        + page_tail()
+    )
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html_content)
     print(f'HTML 出力: {path}')

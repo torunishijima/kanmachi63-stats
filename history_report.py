@@ -11,6 +11,7 @@ from collections import defaultdict
 from datetime import datetime
 from urllib.parse import quote
 
+from html_common import page_head, page_tail
 from scrape_kanmachi import (
     SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
@@ -123,135 +124,107 @@ def write_html(history, instruments, total, path):
     now = datetime.now().strftime('%Y-%m-%d %H:%M')
     total_players = len(sorted_names)
 
-    html_content = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>上町63 出演履歴</title>
-<style>
-  * {{ box-sizing: border-box; }}
-  :root {{
-    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
-    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a; --accent-soft:rgba(255,106,42,.13);
-  }}
-  body {{ font-family: "Hiragino Sans","Meiryo",sans-serif; margin:0; background:var(--bg); color:var(--text); }}
-
-  /* ナビゲーションバー */
-  .sitenav {{ position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line); }}
-  .sitenav a {{ color:#d8dde3; text-decoration:none; padding:0 .95em; height:44px; line-height:44px; font-size:.82em; white-space:nowrap; display:inline-block; }}
-  .sitenav a:hover {{ background:#202630; color:#fff; }}
-  .sitenav a.nav-active {{ background:var(--accent); color:#fff; font-weight:bold; }}
-  .snav-home {{ color:#ffd9c5 !important; border-right:1px solid var(--line); }}
-
-  .container {{ display:flex; height:calc(100vh - 44px); }}
-  .left-panel {{
+    css_extra = """
+  .container { display:flex; height:calc(100vh - 44px); }
+  .left-panel {
     width:320px; min-width:220px; background:var(--panel); color:var(--text);
     display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
-  }}
-  .right-panel {{ flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }}
+  }
+  .right-panel { flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }
 
-  .panel-title {{ padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }}
-  .search-box {{
+  .panel-title { padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }
+  .search-box {
     margin:.3em .8em .65em; padding:.7em .85em;
     border:1px solid var(--line); border-radius:8px; width:calc(100% - 1.6em);
     font-size:.95em; background:#10141a; color:var(--text); outline:none;
-  }}
-  .search-box:focus {{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }}
-  .search-box::placeholder {{ color:#6f7782; }}
-  .list-wrap {{ flex:1; overflow:hidden; position:relative; }}
-  .list-wrap::after {{
+  }
+  .search-box:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .search-box::placeholder { color:#6f7782; }
+  .list-wrap { flex:1; overflow:hidden; position:relative; }
+  .list-wrap::after {
     content:''; pointer-events:none;
     position:absolute; bottom:0; left:0; right:0; height:3em;
     background:linear-gradient(transparent, var(--panel));
-  }}
-  .player-list {{ height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }}
-  .player-item {{
+  }
+  .player-list { height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .player-item {
     min-height:42px; padding:.65em 1em; cursor:pointer; font-size:.9em;
     border-left:3px solid transparent;
     display:flex; justify-content:space-between; align-items:center;
-  }}
-  .player-item:hover {{ background:#202630; }}
-  .player-item.active {{ background:var(--accent); border-left-color:#fff; color:#fff; }}
-  .player-item .pname {{ flex:1; }}
-  .player-item .ptotal {{ font-size:.78em; color:var(--muted); margin-left:.5em; }}
-  .player-item.active .ptotal {{ color:#ffe; }}
+  }
+  .player-item:hover { background:#202630; }
+  .player-item.active { background:var(--accent); border-left-color:#fff; color:#fff; }
+  .player-item .pname { flex:1; }
+  .player-item .ptotal { font-size:.78em; color:var(--muted); margin-left:.5em; }
+  .player-item.active .ptotal { color:#ffe; }
 
-  .placeholder {{
+  .placeholder {
     display:flex; align-items:center; justify-content:center;
     height:60%; color:#69717c; font-size:1em;
-  }}
-  .detail-header {{ margin-bottom:1.2em; }}
-  .detail-name {{ font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }}
-  .detail-meta {{ color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }}
-  .detail-meta span {{ margin-right:0; }}
-  .detail-meta .inst {{ color:#fff; }}
-  .detail-meta .days {{ color:#ffb38d; font-weight:bold; }}
+  }
+  .detail-header { margin-bottom:1.2em; }
+  .detail-name { font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }
+  .detail-meta { color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }
+  .detail-meta span { margin-right:0; }
+  .detail-meta .inst { color:#fff; }
+  .detail-meta .days { color:#ffb38d; font-weight:bold; }
 
-  .links {{ margin:.6em 0 1em; font-size:.85em; }}
-  .links a {{ color:#ffd9c5; text-decoration:none; margin-right:1.2em; }}
-  .links a:hover {{ text-decoration:underline; color:#fff; }}
+  .links { margin:.6em 0 1em; font-size:.85em; }
+  .links a { color:#ffd9c5; text-decoration:none; margin-right:1.2em; }
+  .links a:hover { text-decoration:underline; color:#fff; }
 
   /* 年タブ */
-  .yr-tabs {{ display:flex; flex-wrap:wrap; gap:.35em; margin:.2em 0 1.2em; }}
-  .yr-tab {{
+  .yr-tabs { display:flex; flex-wrap:wrap; gap:.35em; margin:.2em 0 1.2em; }
+  .yr-tab {
     border:1px solid var(--line); background:var(--panel); padding:.45em .75em;
     border-radius:8px; cursor:pointer; font-size:.82em; color:#c8ced6;
-  }}
-  .yr-tab:hover {{ background:#202630; border-color:#4c5563; }}
-  .yr-tab.active {{ background:var(--accent); color:#fff; border-color:var(--accent); font-weight:bold; }}
+  }
+  .yr-tab:hover { background:#202630; border-color:#4c5563; }
+  .yr-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:bold; }
 
-  h3 {{ font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }}
+  h3 { font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }
 
   /* 年グループ */
-  .year-group {{ margin-bottom:1.5em; }}
-  .year-label {{
+  .year-group { margin-bottom:1.5em; }
+  .year-label {
     font-size:.85em; font-weight:bold; color:#fff;
     background:var(--panel-2); border:1px solid var(--line); display:inline-block;
     padding:.25em .8em; border-radius:999px; margin-bottom:.5em;
-  }}
+  }
 
   /* 日付ごとの行 */
-  .date-row {{
+  .date-row {
     display:flex; align-items:flex-start; gap:1em;
     padding:.65em 0; border-bottom:1px solid var(--line); font-size:.9em;
-  }}
-  .date-row:last-child {{ border-bottom:none; }}
-  .date-label {{
+  }
+  .date-row:last-child { border-bottom:none; }
+  .date-label {
     min-width:5.5em; color:var(--muted); font-weight:bold; flex-shrink:0; padding-top:.18em;
-  }}
-  .co-chips {{ display:flex; flex-wrap:wrap; gap:.35em; }}
-  .chip {{
+  }
+  .co-chips { display:flex; flex-wrap:wrap; gap:.35em; }
+  .chip {
     background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:.28em .68em;
     font-size:.85em; cursor:pointer; white-space:nowrap;
-  }}
-  .chip:hover {{ background:var(--accent); border-color:var(--accent); color:#fff; }}
-  .chip .chip-inst {{ color:var(--muted); font-size:.8em; margin-left:.3em; }}
-  .no-co {{ color:#69717c; font-size:.85em; font-style:italic; }}
+  }
+  .chip:hover { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .chip .chip-inst { color:var(--muted); font-size:.8em; margin-left:.3em; }
+  .no-co { color:#69717c; font-size:.85em; font-style:italic; }
 
-  .meta {{ color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }}
+  .meta { color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }
 
-  @media (max-width: 640px) {{
-    .sitenav {{ height:42px; }}
-    .sitenav a {{ height:42px; line-height:42px; padding:0 .8em; }}
-    .container {{ flex-direction:column; height:auto; min-height:calc(100vh - 42px); }}
-    .left-panel {{ width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }}
-    .right-panel {{ flex:1; padding:1em .9em 1.5em; }}
-    .detail-name {{ font-size:1.3em; }}
-    .date-row {{ gap:.7em; }}
-    .date-label {{ min-width:4em; }}
-    .chip {{ max-width:100%; white-space:normal; }}
-  }}
-</style>
-</head>
-<body>
-<nav class="sitenav">
-  <a href="index.html" class="snav-home">kanmachi63</a>
-  <a href="kanmachi63_history.html" class="nav-active">履歴</a>
-  <a href="kanmachi63_coplayers.html">共演者</a>
-  <a href="kanmachi63_yearly.html">年別</a>
-  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
-</nav>
+  @media (max-width: 640px) {
+    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
+    .left-panel { width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }
+    .right-panel { flex:1; padding:1em .9em 1.5em; }
+    .detail-name { font-size:1.3em; }
+    .date-row { gap:.7em; }
+    .date-label { min-width:4em; }
+    .chip { max-width:100%; white-space:normal; }
+  }
+"""
+    html_content = (
+        page_head('上町63 出演履歴', css_extra, active='history')
+        + f'''<div class="container">
 <div class="container">
 
   <div class="left-panel">
@@ -364,9 +337,9 @@ const initName = slashIdx >= 0 ? rawHash.slice(0, slashIdx) : rawHash;
 const initYear = slashIdx >= 0 ? rawHash.slice(slashIdx + 1) : null;
 if (initName && byName[initName]) showPlayer(initName, initYear);
 </script>
-</body>
-</html>
-"""
+'''
+        + page_tail()
+    )
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html_content)
     print(f'HTML 出力: {path}')

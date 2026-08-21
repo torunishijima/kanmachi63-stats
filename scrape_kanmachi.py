@@ -4,6 +4,7 @@ kanmachi63 ブログ スクレイパー
 月次スケジュール記事からミュージシャンの出演回数を集計します。
 """
 
+import json
 import re
 import csv
 import time
@@ -15,6 +16,18 @@ from pathlib import Path
 from collections import defaultdict
 from html.parser import HTMLParser
 from datetime import datetime
+
+from html_common import page_head, page_tail
+
+# 設定ファイル（楽器コード・名前エイリアス）の場所
+CONFIG_DIR = Path(__file__).resolve().parent / 'config'
+
+
+def _load_json_config(name: str) -> dict:
+    path = CONFIG_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f'設定ファイルがありません: {path}')
+    return json.loads(path.read_text(encoding='utf-8'))
 
 
 # ─── HTML パーサー ────────────────────────────────────────────────────────────
@@ -112,19 +125,9 @@ def to_halfwidth(text: str) -> str:
 
 # ─── 楽器コード定義 ──────────────────────────────────────────────────────────
 
-_KNOWN_INSTRUMENTS = {
-    'pf', 'gt', 'ag', 'eg', 'b', 'eb', 'ds', 'vo', 'fl', 'cl', 'tp', 'tb',
-    'ts', 'as', 'bs', 'ss', 'vc', 'vn', 'vln', 'va', 'org', 'syn', 'key',
-    'perc', 'tabla', 'harp', 'oud', 'sax', 'harm', 'har', 'harmo', 'hamo', 'acc', 'mand', 'vib', 'mar',
-    'etc', 'mc', 'dj', 'rap', 'cho', 'wb', 'reed',
-}
-
-_NON_INSTRUMENTS = {
-    'img', 'src', 'var', 'div', 'span', 'href', 'http', 'https',
-    'www', 'com', 'net', 'org', 'jp', 'html', 'css', 'js', 'gif', 'png',
-    'jpg', 'svg', 'addEventListener', 'attachEvent', 'style', 'type',
-    'function', 'return', 'document', 'window', 'null', 'undefined',
-}
+_instruments_cfg = _load_json_config('instruments.json')
+_KNOWN_INSTRUMENTS = set(_instruments_cfg.get('known_instruments', []))
+_NON_INSTRUMENTS = set(_instruments_cfg.get('non_instruments', []))
 
 def _is_instrument(part: str) -> bool:
     codes = [c for c in part.lower().split('.') if c]
@@ -178,104 +181,10 @@ def clean_name(name: str) -> str:
     return name
 
 
-# 名前エイリアスマップ（略称・誤字 → 正式名）
-# 値が None のものは「明らかなノイズ」として除外
+# 名前エイリアスマップ（略称・誤字 → 正式名）は config/names.json から読み込む。
+# 値が null のものは「明らかなノイズ」として除外。
 _NAME_ALIASES: dict[str, str | None] = {
-    # ── 略称 → 正式名 ──────────────────────────────────────────
-    'リンヘイテツ':    'リン・ヘイテツ',
-    'リンヘテツ':      'リン・ヘイテツ',
-    'リン':           'リン・ヘイテツ',
-    '落合':           '落合康介',
-    '今泉':           '今泉総之輔',
-    '渋谷':           '渋谷毅',
-    '古木':           '古木佳祐',
-    '浅川':           '浅川太平',
-    '杉本':           '杉本亮',
-    '菅原':           '菅原高志',
-    '座小田諒':       '座小田諒一',
-    'ファビオボッタッツォ': 'ファビオ・ボッタッツォ',
-    'ファビオ':       'ファビオ・ボッタッツォ',
-    'ハクエイキム':   'ハクエイ・キム',
-    'ハクエイ':       'ハクエイ・キム',
-    'マサカマグチ':    'マサ・カマグチ',
-    'マサ　カマグチ':  'マサ・カマグチ',
-    'マサ カマグチ':   'マサ・カマグチ',
-    'マサ':           'マサ・カマグチ',
-    'ジョーローゼンバーグ': 'ジョー・ローゼンバーグ',
-    'スティーブバリー': 'スティーブ・バリー',
-    'デビッドバーグマン': 'デビッド・バーグマン',
-    'バート':          'バート・シーガー',
-    'イスル':          'イスル・キム',
-    'イスル キム':     'イスル・キム',
-    'エルセン':        'エルセン・プライス',
-    'マーティー':      'マーティー・ホロベック',
-    'シューミ朱美':   '宅シューミ朱美',
-    '大村':           '大村亘',
-    '滝野':           '滝野聡',
-    # ── ニックネーム・よみがな表記 ────────────────────────────────
-    'HARU高内':        '高内春彦',
-    '高内HARU晴彦':    '高内春彦',
-    '高内晴彦':        '高内春彦',
-    'ハル高内':        '高内春彦',
-    '高内ハル':        '高内春彦',
-    '蜂谷マキ':        '蜂谷真紀',
-    'つのだ健':        'つの犬',
-    # ── 字の誤り（名前） ───────────────────────────────────────
-    '増田涼一朗':      '増田涼一郎',
-    '増田諒一郎':      '増田涼一郎',
-    '三嶋大樹':        '三嶋大輝',
-    '下梶川雅人':      '下梶谷雅人',
-    '小松信之':        '小松伸之',
-    '鬼努無月':        '鬼怒無月',
-    '橋爪督亮':        '橋爪亮督',
-    '福富博':          '福冨博',
-    'のばら小太刀':    '小太刀のばら',
-    '宅\u201cシュミー\u201d朱美': '宅シューミ朱美',
-    '進藤陽吾':        '進藤陽悟',
-    '沢田譲治':        '沢田穣治',
-    'ませひろ子':      'ませひろこ',
-    '池戸裕太':        '池戸祐太',
-    '柳沼佑育':        '柳沼祐育',
-    '佐々木マン正弘':  '佐々木正弘',
-    '松田\u201cGORI\u201d広士': '松田広士',
-    'Joｓen':          'Josen',
-    'ユリアリマサ':    'ユキアリマサ',
-    # ── 字の誤り（ユーザー確認済み） ─────────────────────────────
-    '斎藤良':          '斉藤良',        # 多い方(6)に統一
-    '鈴木瑶子':        '鈴木瑤子',      # 多い方(3)に統一
-    '林祐一':          '林祐市',        # 多い方(4)に統一
-    '小林航太郎':      '小林航太朗',    # 多い方(2)に統一
-    '佐藤節夫':        '佐藤節雄',      # 多い方(3)に統一
-    '竹中直':          '竹内直',        # 多い方(150)に統一
-    '安藤昇':          '安東昇',        # 多い方(86)に統一
-    '公平徹太郎':      '公手徹太郎',    # 同数のため公手を採用
-    # ── ノイズ除去 ────────────────────────────────────────────
-    '￥3':             None,
-    '￥３':            None,
-    '.electronics':    None,
-    'electronics':     None,
-    'Satsuki Cd':      'Satsuki',
-    '渋谷毅SOLO':      '渋谷毅',
-    '西山瞳ＳＯＬＯ': '西山瞳',
-    '田中菜緒子【SOLDOUT】': '田中菜緒子',
-    '大村亘￥3':       '大村亘',
-    '大村亘￥３':      '大村亘',
-    '安東昇￥3':       '安東昇',
-    '中道みさき￥３':  '中道みさき',
-    '甲斐正樹￥￥３':  '甲斐正樹',
-    '山崎隼￥３':      '山崎隼',
-    '則武諒￥３':      '則武諒',
-    '則武諒pf':        '則武諒',
-    '則武諒一':        '則武諒',
-    'ｓｓ.山口真文':   '山口真文',
-    'ｆｌ.竹内直':     '竹内直',
-    'ｐｆ.蜂谷真紀':   '蜂谷真紀',
-    'ｐｆ.宅シューミ朱美': '宅シューミ朱美',
-    '山口真文ｇ':      '山口真文',
-    '.橋爪亮督':       '橋爪亮督',
-    '橋爪亮督.':       '橋爪亮督',
-    '佐々木MAN正弘':   '佐々木正弘',
-    '松田"GORI"広士':  '松田広士',
+    k: (v if v is not None else None) for k, v in _load_json_config('names.json').items()
 }
 
 def normalize_name(name: str) -> str | None:
@@ -409,7 +318,9 @@ def cache_path_for_url(url: str) -> Path:
     return CACHE_DIR / safe
 
 def fetch(url: str) -> str:
-    """URLからHTMLを取得して文字列で返す"""
+    """URLからHTMLを取得して文字列で返す。平文httpはhttpsに正規化してから取得する。"""
+    if url.startswith('http://'):
+        url = 'https://' + url[len('http://'):]
     req = urllib.request.Request(
         url,
         headers={'User-Agent': 'Mozilla/5.0 (compatible; kanmachi-stats/1.0)'}
@@ -492,7 +403,7 @@ def load_all_entries(refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[
     （黙って欠落したデータで集計が進むのを防ぐため）。
     """
     entries = []
-    start_url = 'http://kanmachi63.blog.fc2.com/'
+    start_url = 'https://kanmachi63.blog.fc2.com/'
     url = start_url
     visited = set()
     page_num = 0
@@ -652,75 +563,33 @@ def write_html(stats: dict, path: str, period_start: str = '', period_end: str =
             f'</tr>\n'
         )
 
-    html_content = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>上町63 出演者統計</title>
-<style>
-  :root {{
-    --bg:#0f1115; --panel:#171a20; --panel-2:#20242c; --line:#2c313b;
-    --text:#f1f3f5; --muted:#9aa3ad; --accent:#ff6a2a;
-  }}
-  * {{ box-sizing:border-box; }}
-  body {{ font-family: "Hiragino Sans", "Meiryo", sans-serif; margin: 0; background: var(--bg); color: var(--text); }}
-  .page-content {{ padding: 1.2em 1em 2em; overflow-x:auto; -webkit-overflow-scrolling:touch; }}
-  h1 {{ color: #fff; padding-bottom: .3em; margin: 0 0 .35em; font-size:1.35em; }}
-  p.meta {{ color: var(--muted); font-size: .82em; margin: 0 0 1em; }}
-  table {{ border-collapse: collapse; min-width: 760px; width: 100%; background: var(--panel); border:1px solid var(--line); }}
-  th {{ background: #11151b; color: #d8dde3; padding: 9px 12px; text-align: left; font-size:.8em; }}
-  td {{ padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size:.88em; }}
-  tr:hover td {{ background: #202630; }}
-  .rank {{ color: var(--muted); font-size: .9em; width: 3em; text-align: center; }}
-  .count {{ font-weight: bold; color: #ffb38d; font-size: 1.05em; text-align: center; width: 5em; }}
-  .inst {{ color: #c8ced6; font-size: .82em; }}
-  .articles {{ font-size: .76em; color: var(--muted); max-width: 340px; }}
-  .article {{ display: inline-block; background: var(--panel-2); border:1px solid var(--line); border-radius: 999px; padding: 1px 7px; margin: 1px; }}
-  .name a {{ color: #fff; text-decoration: none; }}
-  .name a:hover {{ color: var(--accent); text-decoration: underline; }}
-  .sitenav {{ position:sticky; top:0; z-index:20; display:flex; align-items:center; background:#141820; height:44px; overflow-x:auto; flex-shrink:0; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line); }}
-  .sitenav a {{ color:#d8dde3; text-decoration:none; padding:0 .95em; height:44px; line-height:44px; font-size:.82em; white-space:nowrap; display:inline-block; }}
-  .sitenav a:hover {{ background:#202630; color:#fff; }}
-  .sitenav a.nav-active {{ background:var(--accent); color:#fff; font-weight:bold; }}
-  .snav-home {{ color:#ffd9c5 !important; border-right:1px solid var(--line); }}
-  @media (max-width:640px) {{
-    .sitenav {{ height:42px; }}
-    .sitenav a {{ height:42px; line-height:42px; padding:0 .8em; }}
-    .page-content {{ padding:.95em .9em 1.4em; }}
-    h1 {{ font-size:1.15em; }}
-  }}
-</style>
-</head>
-<body>
-<nav class="sitenav">
-  <a href="index.html" class="snav-home">kanmachi63</a>
-  <a href="kanmachi63_history.html">履歴</a>
-  <a href="kanmachi63_coplayers.html">共演者</a>
-  <a href="kanmachi63_yearly.html">年別</a>
-  <a href="kanmachi63_heatmap.html">ヒートマップ</a>
-</nav>
-<div class="page-content">
-<h1>上町63 出演者統計</h1>
-<p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>
-<table>
-<thead>
-<tr>
-  <th>順位</th>
-  <th>名前</th>
-  <th>パート</th>
-  <th>出演日数</th>
-  <th>掲載記事</th>
-</tr>
-</thead>
-<tbody>
-{table_rows}
-</tbody>
-</table>
-</div>
-</body>
-</html>
+    css_extra = """
+  .page-content { padding: 1.2em 1em 2em; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { border-collapse: collapse; min-width: 760px; width: 100%; background: var(--panel); border:1px solid var(--line); }
+  th { background: #11151b; color: #d8dde3; padding: 9px 12px; text-align: left; font-size:.8em; }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; font-size:.88em; }
+  tr:hover td { background: #202630; }
+  .rank { color: var(--muted); font-size: .9em; width: 3em; text-align: center; }
+  .count { font-weight: bold; color: #ffb38d; font-size: 1.05em; text-align: center; width: 5em; }
+  .inst { color: #c8ced6; font-size: .82em; }
+  .articles { font-size: .76em; color: var(--muted); max-width: 340px; }
+  .article { display: inline-block; background: var(--panel-2); border:1px solid var(--line); border-radius: 999px; padding: 1px 7px; margin: 1px; }
+  .name a { color: #fff; text-decoration: none; }
+  .name a:hover { color: var(--accent); text-decoration: underline; }
+  @media (max-width:640px) {
+    .page-content { padding:.95em .9em 1.4em; }
+    h1 { font-size:1.15em; }
+  }
 """
+    html_content = (
+        page_head('上町63 出演者統計', css_extra, active='')
+        + '<div class="page-content">\n'
+        + f'<h1>上町63 出演者統計</h1>\n'
+        + f'<p class="meta">集計日時: {now} ／ 出演者数: {len(rows)} 名 ／ 対象期間: {period_start}〜{period_end}（{period_count}ヶ月）</p>\n'
+        + '<table>\n<thead>\n<tr>\n  <th>順位</th>\n  <th>名前</th>\n  <th>パート</th>\n  <th>出演日数</th>\n  <th>掲載記事</th>\n</tr>\n</thead>\n'
+        + f'<tbody>\n{table_rows}</tbody>\n</table>\n</div>\n'
+        + page_tail()
+    )
     with open(path, 'w', encoding='utf-8') as f:
         f.write(html_content)
     print(f'HTML 出力: {path}')
@@ -743,7 +612,7 @@ def update_index_html(stats: dict, period_start: str, period_end: str, period_co
 # ─── エントリポイント ──────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    BASE_URL = 'http://kanmachi63.blog.fc2.com/'
+    BASE_URL = 'https://kanmachi63.blog.fc2.com/'
     OUT_CSV  = 'kanmachi63_stats.csv'
     OUT_HTML = 'kanmachi63_stats.html'
 

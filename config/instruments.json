@@ -1,0 +1,14 @@
+{
+  "known_instruments": [
+    "pf", "gt", "ag", "eg", "b", "eb", "ds", "vo", "fl", "cl", "tp", "tb",
+    "ts", "as", "bs", "ss", "vc", "vn", "vln", "va", "org", "syn", "key",
+    "perc", "tabla", "harp", "oud", "sax", "harm", "har", "harmo", "hamo",
+    "acc", "mand", "vib", "mar", "etc", "mc", "dj", "rap", "cho", "wb", "reed"
+  ],
+  "non_instruments": [
+    "img", "src", "var", "div", "span", "href", "http", "https",
+    "www", "com", "net", "org", "jp", "html", "css", "js", "gif", "png",
+    "jpg", "svg", "addEventListener", "attachEvent", "style", "type",
+    "function", "return", "document", "window", "null", "undefined"
+  ]
+}
