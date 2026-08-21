@@ -12,37 +12,15 @@ from datetime import datetime
 from urllib.parse import quote
 
 from scrape_kanmachi import (
-    BlogParser, NextPageParser, SCHEDULE_TITLE_RE,
+    SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
-    normalize_name, fetch_cached, DEFAULT_REFRESH_PAGES,
+    normalize_name, load_all_entries,
 )
 
 DATE_DAY_RE = re.compile(r'(\d+)月(\d+)日')
 # タイトルから年と月を取得: "2026|　4月のスケジュール" or "2026年4月のスケジュール" など
 TITLE_YEAR_RE = re.compile(r'(20\d{2})')
 TITLE_MONTH_RE = re.compile(r'(\d+)月のスケジュール')
-
-
-def load_entries(refresh_pages: int | None = DEFAULT_REFRESH_PAGES):
-    """記事一覧を読み込む。取得に失敗した場合は例外を送出する。"""
-    entries = []
-    start_url = 'http://kanmachi63.blog.fc2.com/'
-    url = start_url
-    visited = set()
-    page_num = 0
-    while url and url not in visited:
-        visited.add(url)
-        refresh = refresh_pages is None or page_num < refresh_pages
-        text = fetch_cached(url, refresh=refresh)
-        p = BlogParser()
-        p.feed(text)
-        entries.extend(p.entries)
-        np = NextPageParser()
-        np.feed(text)
-        url = np.next_url
-        page_num += 1
-    print(f'{len(entries)} 記事読み込み完了')
-    return entries
 
 
 def build_history_data(entries):
@@ -396,7 +374,7 @@ if (initName && byName[initName]) showPlayer(initName, initYear);
 
 if __name__ == '__main__':
     print('=== kanmachi63 出演履歴生成 ===\n')
-    entries = load_entries()
+    entries = load_all_entries()
     if not entries:
         raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
     print('履歴データ集計中...')

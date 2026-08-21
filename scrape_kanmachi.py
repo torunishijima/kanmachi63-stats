@@ -484,6 +484,33 @@ def fetch_cached(url: str, refresh: bool = False) -> str:
     return text
 
 
+def load_all_entries(refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[dict]:
+    """
+    ブログ全ページを巡回して記事一覧を返す（各レポート共通の読み込み処理）。
+    refresh_pages は先頭から再取得するページ数（既定 DEFAULT_REFRESH_PAGES）。
+    None を渡すと全ページを再取得する。取得に失敗した場合はページを読み飛ばさず例外を送出する
+    （黙って欠落したデータで集計が進むのを防ぐため）。
+    """
+    entries = []
+    start_url = 'http://kanmachi63.blog.fc2.com/'
+    url = start_url
+    visited = set()
+    page_num = 0
+    while url and url not in visited:
+        visited.add(url)
+        refresh = refresh_pages is None or page_num < refresh_pages
+        text = fetch_cached(url, refresh=refresh)
+        p = BlogParser()
+        p.feed(text)
+        entries.extend(p.entries)
+        np = NextPageParser()
+        np.feed(text)
+        url = np.next_url
+        page_num += 1
+    print(f'{len(entries)} 記事読み込み完了')
+    return entries
+
+
 # ─── メイン処理 ───────────────────────────────────────────────────────────────
 
 def scrape_all_pages(start_url: str, refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[dict]:

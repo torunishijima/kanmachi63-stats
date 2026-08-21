@@ -12,9 +12,8 @@ from datetime import datetime
 from urllib.parse import quote
 
 from scrape_kanmachi import (
-    BlogParser, NextPageParser, SCHEDULE_TITLE_RE,
-    extract_performers_by_date, normalize_name, fetch_cached,
-    DEFAULT_REFRESH_PAGES,
+    SCHEDULE_TITLE_RE,
+    extract_performers_by_date, normalize_name, load_all_entries,
 )
 
 # ─── 年付きタイトルから年を抽出 ───────────────────────────────────────────────
@@ -57,34 +56,6 @@ def aggregate_by_year(entries: list[dict]) -> dict[int, dict]:
 
     # defaultdict → 普通のdict
     return {y: dict(d) for y, d in sorted(by_year.items())}
-
-
-# ─── キャッシュから全記事を読み込む ──────────────────────────────────────────
-
-def load_entries_from_cache(refresh_pages: int | None = DEFAULT_REFRESH_PAGES) -> list[dict]:
-    """記事一覧を読み込む。取得に失敗した場合は例外を送出する。"""
-    all_entries = []
-    start_url = 'http://kanmachi63.blog.fc2.com/'
-    url = start_url
-    visited = set()
-    page_num = 0
-
-    while url and url not in visited:
-        visited.add(url)
-        refresh = refresh_pages is None or page_num < refresh_pages
-        text = fetch_cached(url, refresh=refresh)
-
-        p = BlogParser()
-        p.feed(text)
-        all_entries.extend(p.entries)
-
-        np = NextPageParser()
-        np.feed(text)
-        url = np.next_url
-        page_num += 1
-
-    print(f'合計 {len(all_entries)} 記事読み込み完了')
-    return all_entries
 
 
 # ─── HTML レポート生成 ────────────────────────────────────────────────────────
@@ -327,7 +298,7 @@ def write_csv_report(by_year: dict[int, dict], path: str):
 if __name__ == '__main__':
     print('=== kanmachi63 年別トレンド分析 ===\n')
     print('記事読み込み中...')
-    entries = load_entries_from_cache()
+    entries = load_all_entries()
     if not entries:
         raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
 
