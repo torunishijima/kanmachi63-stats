@@ -11,7 +11,9 @@ from collections import defaultdict
 from datetime import datetime
 from itertools import combinations
 
-from html_common import page_head, page_tail
+from html_common import (
+    page_head, page_tail, TWO_PANE_CSS, TWO_PANE_JS, two_pane_body,
+)
 from scrape_kanmachi import (
     SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
@@ -96,57 +98,8 @@ def write_html(total, co, instruments, path):
     total_players = len(sorted_names)
 
     css_extra = """
-  /* レイアウト */
-  .container { display:flex; height:calc(100vh - 44px); }
-  .left-panel {
-    width:320px; min-width:220px; background:var(--panel); color:var(--text);
-    display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
-  }
-  .right-panel { flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }
-
-  /* 左パネル */
-  .panel-title { padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }
-  .search-box {
-    margin:.3em .8em .65em; padding:.7em .85em;
-    border:1px solid var(--line); border-radius:8px; width:calc(100% - 1.6em);
-    font-size:.95em; background:#10141a; color:var(--text);
-    outline:none;
-  }
-  .search-box:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
-  .search-box::placeholder { color:#6f7782; }
-  .list-wrap { flex:1; overflow:hidden; position:relative; }
-  .list-wrap::after {
-    content:''; pointer-events:none;
-    position:absolute; bottom:0; left:0; right:0; height:3em;
-    background:linear-gradient(transparent, var(--panel));
-  }
-  .player-list { height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-  .player-item {
-    min-height:42px; padding:.65em 1em; cursor:pointer; font-size:.9em;
-    border-left:3px solid transparent;
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .player-item:hover { background:#202630; }
-  .player-item.active { background:var(--accent); border-left-color:#fff; color:#fff; }
-  .player-item .pname { flex:1; }
-  .player-item .ptotal { font-size:.78em; color:var(--muted); margin-left:.5em; }
-  .player-item.active .ptotal { color:#ffe; }
-
-  /* 右パネル */
-  .placeholder {
-    display:flex; align-items:center; justify-content:center;
-    height:60%; color:#69717c; font-size:1em;
-  }
-  .detail-header { margin-bottom:1.2em; }
-  .detail-name { font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }
-  .detail-meta { color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }
-  .detail-meta span { margin-right:0; }
-  .detail-meta .inst { color:#fff; }
-  .detail-meta .days { color:#ffb38d; font-weight:bold; }
-
-  h3 { font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }
-
   /* 共演者テーブル */
+  h3 { font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }
   .co-table { border-collapse:collapse; width:100%; max-width:620px; background:var(--panel);
                border:1px solid var(--line); border-radius:8px; overflow:hidden; }
   .co-table th { background:#11151b; color:#d8dde3; padding:9px 14px; text-align:left; font-size:.78em; }
@@ -162,57 +115,22 @@ def write_html(total, co, instruments, path):
   .bar-bg { background:#2f3540; border-radius:3px; height:8px; }
   .bar-fill { background:var(--accent); border-radius:3px; height:8px; }
 
-  .meta { color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }
-
-  /* スマホ対応 */
   @media (max-width: 640px) {
-    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
-    .left-panel { width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }
-    .right-panel { flex:1; padding:1em .9em 1.5em; }
-    .detail-name { font-size:1.3em; }
     .co-inst { display:none; }
     .co-pct { display:none; }
     .co-table th, .co-table td { padding:9px 10px; }
   }
 """
     html_content = (
-        page_head('上町63 共演者ランキング', css_extra, active='coplayers')
-        + f'''<div class="container">
-
-  <!-- 左：出演者リスト -->
-  <div class="left-panel">
-    <div class="panel-title">出演者 ({total_players}名)</div>
-    <input class="search-box" type="text" id="search" placeholder="名前で絞り込み…" oninput="filterList()">
-    <div class="list-wrap"><div class="player-list" id="playerList"></div></div>
-    <div class="meta">集計: {now}</div>
-  </div>
-
-  <!-- 右：共演者詳細 -->
-  <div class="right-panel" id="rightPanel">
-    <div class="placeholder">出演者を選んでください</div>
-  </div>
-
-</div>
-
+        page_head('上町63 共演者ランキング', TWO_PANE_CSS + css_extra, active='coplayers')
+        + two_pane_body(total_players, now, '名前をえらぶと、その人の共演者ランキングが出ます。')
+        + f'''
 <script>
 const DATA = {players_json};
 const byName = {{}};
 DATA.forEach(p => byName[p.name] = p);
-
-function filterList() {{
-  const q = document.getElementById('search').value.trim();
-  renderList(q);
-}}
-
-function renderList(filter='') {{
-  const el = document.getElementById('playerList');
-  el.innerHTML = DATA
-    .filter(p => !filter || p.name.includes(filter))
-    .map(p => `<div class="player-item" id="item-${{p.name}}" onclick="showPlayer('${{p.name.replace(/'/g, "\\\\'")}}')">
-      <span class="pname">${{p.name}}</span>
-      <span class="ptotal">${{p.total}}日</span>
-    </div>`).join('');
-}}
+const OVERVIEW_LEAD = '名前をえらぶと、その人がだれと何日いっしょに演奏したかが出ます。上の検索で名前を探せます。';
+{TWO_PANE_JS}
 
 function showPlayer(name) {{
   const p = byName[name];
@@ -225,6 +143,7 @@ function showPlayer(name) {{
   document.querySelectorAll('.player-item').forEach(el => el.classList.remove('active'));
   const item = document.getElementById('item-' + name);
   if (item) {{ item.classList.add('active'); item.scrollIntoView({{block:'nearest'}}); }}
+  openDetail();
 
   const maxDays = p.co.length > 0 ? p.co[0].days : 1;
 
@@ -233,7 +152,7 @@ function showPlayer(name) {{
     const pct = Math.round(c.days / maxDays * 100);
     return `<tr>
       <td class="co-rank">${{i+1}}</td>
-      <td class="co-name" onclick="showPlayer('${{c.name.replace(/'/g, "\\\\'")}}')">
+      <td class="co-name" onclick="showPlayer('${{esc(c.name)}}')">
         ${{c.name}}
       </td>
       <td class="co-days">${{c.days}}</td>
@@ -266,9 +185,10 @@ function showPlayer(name) {{
 }}
 
 renderList();
-// URLハッシュからプレイヤーを自動選択
+// URLハッシュがあればその人を、なければ「よく出ている人」を出す
 const hash = decodeURIComponent(location.hash.slice(1));
 if (hash && byName[hash]) showPlayer(hash);
+else renderOverview(OVERVIEW_LEAD);
 </script>
 '''
         + page_tail()

@@ -11,7 +11,9 @@ from collections import defaultdict
 from datetime import datetime
 from urllib.parse import quote
 
-from html_common import page_head, page_tail
+from html_common import (
+    page_head, page_tail, TWO_PANE_CSS, TWO_PANE_JS, two_pane_body,
+)
 from scrape_kanmachi import (
     SCHEDULE_TITLE_RE,
     _prepare_text, _parse_performers, DATE_LINE_RE,
@@ -125,50 +127,6 @@ def write_html(history, instruments, total, path):
     total_players = len(sorted_names)
 
     css_extra = """
-  .container { display:flex; height:calc(100vh - 44px); }
-  .left-panel {
-    width:320px; min-width:220px; background:var(--panel); color:var(--text);
-    display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
-  }
-  .right-panel { flex:1; padding:1.35em 1.6em 2em; overflow-y:auto; background:linear-gradient(180deg,#12161d 0%,var(--bg) 45%); }
-
-  .panel-title { padding:.9em 1em .35em; font-size:.78em; color:var(--muted); letter-spacing:.04em; }
-  .search-box {
-    margin:.3em .8em .65em; padding:.7em .85em;
-    border:1px solid var(--line); border-radius:8px; width:calc(100% - 1.6em);
-    font-size:.95em; background:#10141a; color:var(--text); outline:none;
-  }
-  .search-box:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
-  .search-box::placeholder { color:#6f7782; }
-  .list-wrap { flex:1; overflow:hidden; position:relative; }
-  .list-wrap::after {
-    content:''; pointer-events:none;
-    position:absolute; bottom:0; left:0; right:0; height:3em;
-    background:linear-gradient(transparent, var(--panel));
-  }
-  .player-list { height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-  .player-item {
-    min-height:42px; padding:.65em 1em; cursor:pointer; font-size:.9em;
-    border-left:3px solid transparent;
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .player-item:hover { background:#202630; }
-  .player-item.active { background:var(--accent); border-left-color:#fff; color:#fff; }
-  .player-item .pname { flex:1; }
-  .player-item .ptotal { font-size:.78em; color:var(--muted); margin-left:.5em; }
-  .player-item.active .ptotal { color:#ffe; }
-
-  .placeholder {
-    display:flex; align-items:center; justify-content:center;
-    height:60%; color:#69717c; font-size:1em;
-  }
-  .detail-header { margin-bottom:1.2em; }
-  .detail-name { font-size:1.65em; font-weight:bold; color:#fff; line-height:1.25; }
-  .detail-meta { color:var(--muted); font-size:.88em; margin-top:.5em; display:flex; flex-wrap:wrap; gap:.5em 1.2em; }
-  .detail-meta span { margin-right:0; }
-  .detail-meta .inst { color:#fff; }
-  .detail-meta .days { color:#ffb38d; font-weight:bold; }
-
   .links { margin:.6em 0 1em; font-size:.85em; }
   .links a { color:#ffd9c5; text-decoration:none; margin-right:1.2em; }
   .links a:hover { text-decoration:underline; color:#fff; }
@@ -183,14 +141,6 @@ def write_html(history, instruments, total, path):
   .yr-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:bold; }
 
   h3 { font-size:.95em; color:#c8ced6; margin:1.2em 0 .6em; border-bottom:1px solid var(--line); padding-bottom:.45em; }
-
-  /* 年グループ */
-  .year-group { margin-bottom:1.5em; }
-  .year-label {
-    font-size:.85em; font-weight:bold; color:#fff;
-    background:var(--panel-2); border:1px solid var(--line); display:inline-block;
-    padding:.25em .8em; border-radius:999px; margin-bottom:.5em;
-  }
 
   /* 日付ごとの行 */
   .date-row {
@@ -210,55 +160,22 @@ def write_html(history, instruments, total, path):
   .chip .chip-inst { color:var(--muted); font-size:.8em; margin-left:.3em; }
   .no-co { color:#69717c; font-size:.85em; font-style:italic; }
 
-  .meta { color:#69717c; font-size:.78em; padding:.65em 1em; border-top:1px solid var(--line); }
-
   @media (max-width: 640px) {
-    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
-    .left-panel { width:100%; height:36vh; min-height:230px; max-height:330px; min-width:unset; flex-shrink:0; border-right:none; border-bottom:1px solid var(--line); }
-    .right-panel { flex:1; padding:1em .9em 1.5em; }
-    .detail-name { font-size:1.3em; }
     .date-row { gap:.7em; }
     .date-label { min-width:4em; }
     .chip { max-width:100%; white-space:normal; }
   }
 """
     html_content = (
-        page_head('上町63 出演履歴', css_extra, active='history')
-        + f'''<div class="container">
-<div class="container">
-
-  <div class="left-panel">
-    <div class="panel-title">出演者 ({total_players}名)</div>
-    <input class="search-box" type="text" id="search" placeholder="名前で絞り込み…" oninput="filterList()">
-    <div class="list-wrap"><div class="player-list" id="playerList"></div></div>
-    <div class="meta">集計: {now}</div>
-  </div>
-
-  <div class="right-panel" id="rightPanel">
-    <div class="placeholder">出演者を選んでください</div>
-  </div>
-
-</div>
-
+        page_head('上町63 出演履歴', TWO_PANE_CSS + css_extra, active='history')
+        + two_pane_body(total_players, now, '名前をえらぶと、その人の出演日と共演者が出ます。')
+        + f'''
 <script>
 const DATA = {players_json};
 const byName = {{}};
 DATA.forEach(p => byName[p.name] = p);
-
-function filterList() {{
-  const q = document.getElementById('search').value.trim();
-  renderList(q);
-}}
-
-function renderList(filter='') {{
-  const el = document.getElementById('playerList');
-  el.innerHTML = DATA
-    .filter(p => !filter || p.name.includes(filter))
-    .map(p => `<div class="player-item" id="item-${{p.name}}" onclick="showPlayer('${{p.name.replace(/'/g, "\\\\'")}}')">
-      <span class="pname">${{p.name}}</span>
-      <span class="ptotal">${{p.total}}日</span>
-    </div>`).join('');
-}}
+const OVERVIEW_LEAD = '名前をえらぶと、その人がいつ、だれと演奏したかが出ます。上の検索で名前を探せます。';
+{TWO_PANE_JS}
 
 function showPlayer(name, year) {{
   const p = byName[name];
@@ -271,6 +188,7 @@ function showPlayer(name, year) {{
   document.querySelectorAll('.player-item').forEach(el => el.classList.remove('active'));
   const item = document.getElementById('item-' + name);
   if (item) {{ item.classList.add('active'); item.scrollIntoView({{block:'nearest'}}); }}
+  openDetail();
 
   // 年別グループ化
   const byYear = {{}};
@@ -285,7 +203,6 @@ function showPlayer(name, year) {{
   const activeYear = year && byYear[year] ? year : years[0];
 
   // 年タブ
-  const esc = n => n.replace(/'/g, "\\'");
   const tabs = years.map(y => {{
     const cls = y === activeYear ? ' active' : '';
     return `<button class="yr-tab${{cls}}" onclick="showPlayer('${{esc(name)}}', '${{y}}')">${{y}}年</button>`;
@@ -330,12 +247,13 @@ function showPlayer(name, year) {{
 }}
 
 renderList();
-// ハッシュ解析: #name または #name/year
+// ハッシュ解析: #name または #name/year。指定がなければ「よく出ている人」を出す
 const rawHash = decodeURIComponent(location.hash.slice(1));
 const slashIdx = rawHash.indexOf('/');
 const initName = slashIdx >= 0 ? rawHash.slice(0, slashIdx) : rawHash;
 const initYear = slashIdx >= 0 ? rawHash.slice(slashIdx + 1) : null;
 if (initName && byName[initName]) showPlayer(initName, initYear);
+else renderOverview(OVERVIEW_LEAD);
 </script>
 '''
         + page_tail()
