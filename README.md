@@ -66,6 +66,15 @@ python tests/test_scrape_kanmachi.py
 パーサー（`_prepare_text` / `_parse_performers` / `extract_performers_by_date`）と
 名前正規化（`clean_name` / `normalize_name` / `_is_instrument`）の回帰を検証します。
 
+### HTML生成の検証
+
+[`verify_html.py`](verify_html.py) は、キャッシュ済みの記事から全ページを一時ファイルに生成し、
+共通ナビゲーションなどが含まれているかを確認します。スクレイピング後に実行してください。
+
+```bash
+python verify_html.py
+```
+
 ## 備考
 
 - `nishijima_coplayers.csv` はこのプロジェクトのスクリプトでは生成されず、別途管理されています（CI のコミット対象には含まれます）。

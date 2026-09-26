@@ -30,6 +30,9 @@ jobs:
       - name: Run scraper
         run: python scrape_kanmachi.py
 
+      - name: Verify HTML generation
+        run: python verify_html.py
+
       - name: Run yearly trend
         run: python yearly_trend.py
 
