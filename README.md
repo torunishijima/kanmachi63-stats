@@ -45,6 +45,9 @@ python yearly_trend.py
 月次更新は GitHub Actions（[`.github/workflows/monthly_update.yml`](.github/workflows/monthly_update.yml)）で自動実行されます。
 ワークフローはテスト → スクレイピング → レポート生成 → コミットの順で実行されます。
 
+ブログ側の 403 などで先頭ページを再取得できなかった場合、`scrape_kanmachi.py` は古いキャッシュで集計せずに異常終了し、
+ワークフローは失敗になります（何も更新・コミットされません）。その場合は時間をおいて Actions から手動で再実行してください。
+
 ## 依存関係
 
 - 標準ライブラリのみで動作します（HTTP 取得は `urllib` を使用）

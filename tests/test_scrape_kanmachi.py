@@ -138,6 +138,38 @@ def test_extract_performers_by_date_empty():
     assert extract_performers_by_date('<p>通常の記事</p>') == []
 
 
+# ── fetch_cached_with_meta（再取得失敗の記録） ─────────────────────────────
+
+def test_refresh_failure_is_recorded_when_falling_back_to_cache():
+    import tempfile
+    import urllib.error
+    import scrape_kanmachi as sk
+
+    orig_dir, orig_fetch = sk.CACHE_DIR, sk.fetch_with_retry
+    with tempfile.TemporaryDirectory() as d:
+        try:
+            sk.CACHE_DIR = Path(d)
+            url = 'https://example.invalid/'
+            sk.cache_path_for_url(url).write_text('old', encoding='utf-8')
+
+            def blocked(u):
+                raise urllib.error.HTTPError(u, 403, 'Forbidden', None, None)
+
+            sk.fetch_with_retry = blocked
+            sk.REFRESH_FAILURES.clear()
+            text, hit = sk.fetch_cached_with_meta(url, refresh=True)
+            assert (text, hit) == ('old', True)
+            assert sk.REFRESH_FAILURES == [url]
+
+            # 再取得しない（キャッシュ利用が意図通り）の場合は記録しない
+            sk.REFRESH_FAILURES.clear()
+            sk.fetch_cached_with_meta(url, refresh=False)
+            assert sk.REFRESH_FAILURES == []
+        finally:
+            sk.CACHE_DIR, sk.fetch_with_retry = orig_dir, orig_fetch
+            sk.REFRESH_FAILURES.clear()
+
+
 if __name__ == '__main__':
     # 簡易ランナー（pytest なしで直接実行可能）
     import traceback
