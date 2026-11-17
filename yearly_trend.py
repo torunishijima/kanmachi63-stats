@@ -237,7 +237,9 @@ def write_csv_report(by_year: dict[int, dict], path: str):
 if __name__ == '__main__':
     print('=== kanmachi63 年別トレンド分析 ===\n')
     print('記事読み込み中...')
-    entries = load_all_entries()
+    # 最新ページは先に実行する scrape_kanmachi.py が取得済み。ここで再取得すると
+    # ブログへのアクセスが重なり 403 を招くので、キャッシュをそのまま使う。
+    entries = load_all_entries(refresh_pages=0)
     if not entries:
         raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
 

@@ -42,7 +42,8 @@ COMMON_CSS = """
 
 TWO_PANE_CSS = """
   /* レイアウト */
-  .container { display:flex; height:calc(100vh - 44px); }
+  /* dvh 非対応ブラウザ向けに vh を先に書く。dvh は iPhone Safari のアドレスバー分を除いた高さ */
+  .container { display:flex; height:calc(100vh - 44px); height:calc(100dvh - 44px); }
   .left-panel {
     width:320px; min-width:220px; background:var(--panel); color:var(--text);
     display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
@@ -114,9 +115,9 @@ TWO_PANE_CSS = """
 
   /* スマホ: 一覧と詳細を切り替える */
   @media (max-width: 640px) {
-    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
+    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); min-height:calc(100dvh - 42px); }
     .left-panel {
-      width:100%; min-width:unset; height:calc(100vh - 42px);
+      width:100%; min-width:unset; height:calc(100vh - 42px); height:calc(100dvh - 42px);
       border-right:none; border-bottom:1px solid var(--line);
     }
     .right-panel { display:none; flex:1; }
