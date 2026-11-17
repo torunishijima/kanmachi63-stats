@@ -35,7 +35,8 @@
 
 
   /* レイアウト */
-  .container { display:flex; height:calc(100vh - 44px); }
+  /* dvh 非対応ブラウザ向けに vh を先に書く。dvh は iPhone Safari のアドレスバー分を除いた高さ */
+  .container { display:flex; height:calc(100vh - 44px); height:calc(100dvh - 44px); }
   .left-panel {
     width:320px; min-width:220px; background:var(--panel); color:var(--text);
     display:flex; flex-direction:column; flex-shrink:0; border-right:1px solid var(--line);
@@ -107,9 +108,9 @@
 
   /* スマホ: 一覧と詳細を切り替える */
   @media (max-width: 640px) {
-    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); }
+    .container { flex-direction:column; height:auto; min-height:calc(100vh - 42px); min-height:calc(100dvh - 42px); }
     .left-panel {
-      width:100%; min-width:unset; height:calc(100vh - 42px);
+      width:100%; min-width:unset; height:calc(100vh - 42px); height:calc(100dvh - 42px);
       border-right:none; border-bottom:1px solid var(--line);
     }
     .right-panel { display:none; flex:1; }
@@ -177,7 +178,7 @@
     <div class="panel-hint">名前をえらぶと、その人の出演日と共演者が出ます。</div>
     <input class="search-box" type="text" id="search" placeholder="名前で絞り込み…" oninput="filterList()">
     <div class="list-wrap"><div class="player-list" id="playerList"></div></div>
-    <div class="meta">集計: 2026-11-17 03:20</div>
+    <div class="meta">集計: 2026-11-17 03:28</div>
   </div>
 
   <div class="right-panel" id="rightPanelWrap">
