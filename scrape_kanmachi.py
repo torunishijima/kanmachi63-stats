@@ -312,6 +312,11 @@ DEFAULT_REFRESH_PAGES = 3
 # 一時的な遮断とみなして再試行する HTTP ステータス
 RETRYABLE_STATUS = {403, 429, 500, 502, 503, 504}
 
+# 再取得を試みたが失敗し、古いキャッシュで代用したURLの一覧。
+# 月次更新ではこれが空でないと「更新されていないのに成功」になるため、
+# エントリポイントで検査して異常終了させる。
+REFRESH_FAILURES: list[str] = []
+
 def cache_path_for_url(url: str) -> Path:
     """URLに対応するキャッシュファイルのパスを返す"""
     safe = re.sub(r'[^\w]', '_', url) + '.html'
@@ -383,6 +388,7 @@ def fetch_cached_with_meta(url: str, refresh: bool = False) -> tuple[str, bool]:
     except Exception as e:
         if cache_path.exists():
             print(f'    警告: 再取得に失敗したためキャッシュを使用します ({e})')
+            REFRESH_FAILURES.append(url)
             return cache_path.read_text(encoding='utf-8'), True
         raise
     cache_path.write_text(text, encoding='utf-8')
@@ -621,6 +627,13 @@ if __name__ == '__main__':
     entries = scrape_all_pages(BASE_URL)
     if not entries:
         raise SystemExit('エラー: 記事を1件も取得できませんでした。処理を中止します。')
+    if REFRESH_FAILURES:
+        failed = '\n'.join(f'  - {u}' for u in REFRESH_FAILURES)
+        raise SystemExit(
+            '\nエラー: 次のページを再取得できず、古いキャッシュしか読めませんでした。\n'
+            f'{failed}\n'
+            '最新のスケジュールが反映されないため、出力を更新せずに中止します。'
+        )
 
     print('\n2. スケジュール記事から出演者を集計中...')
     stats = aggregate(entries)
